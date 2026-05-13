@@ -56,3 +56,19 @@ mvn exec:java -Dexec.mainClass="mx.edu.bigdata.EmergenciaProducer"
 ---
 
 ## Arquitectura del sistema
+**Flujo de datos:**
+1. El Producer genera una emergencia aleatoria en formato JSON
+2. La publica en el topic de Kafka cada 3 segundos
+3. Kafka almacena y distribuye el mensaje
+4. El Consumer recibe el mensaje y lo analiza
+5. Cada 5 mensajes muestra estadísticas en consola
+
+**Ejemplo de mensaje JSON:**
+```json
+{
+  "zona": "Reforma",
+  "tipo": "Infarto",
+  "prioridad": "ALTA",
+  "hora": "13:25:01"
+}
+```
