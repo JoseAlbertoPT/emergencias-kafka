@@ -41,7 +41,7 @@ public class EmergenciaProducer {
         Random random = new Random();
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
-            System.out.println("=== EmergenciaProducer iniciado. Enviando al topic: " + TOPIC + " ===");
+            System.out.println(" EmergenciaProducer iniciado. Enviando al topic: " + TOPIC + " ===");
 
             while (true) {
                 String zona      = ZONAS[random.nextInt(ZONAS.length)];

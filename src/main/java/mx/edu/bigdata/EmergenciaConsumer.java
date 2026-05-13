@@ -6,7 +6,15 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +25,17 @@ public class EmergenciaConsumer {
     private static final String TOPIC   = "emergencias-medicas";
     private static final String BROKER  = "localhost:9092";
     private static final String GROUP   = "grupo-emergencias";
+
+    private static final String DB_URL  = "jdbc:postgresql://localhost:5432/emergencias_db";
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASS = "postgres123";
+
+    private static final String SQL_INSERT =
+        "INSERT INTO emergencias (zona, tipo, prioridad, hora, fecha_registro) " +
+        "VALUES (?, ?, ?, ?, ?) RETURNING id";
+
+    private static final DateTimeFormatter HORA_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static int totalEmergencias = 0;
     private static final Map<String, Integer> conteoZonas = new HashMap<>();
@@ -31,21 +50,27 @@ public class EmergenciaConsumer {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
 
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+             Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
+
             consumer.subscribe(Collections.singletonList(TOPIC));
-            System.out.println("=== EmergenciaConsumer iniciado. Escuchando topic: " + TOPIC + " ===\n");
+            System.out.println("=== EmergenciaConsumer iniciado. Escuchando topic: " + TOPIC + " ===");
+            System.out.println("=== Conexion a PostgreSQL establecida ===\n");
 
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-
                 for (ConsumerRecord<String, String> record : records) {
-                    procesarMensaje(record.value());
+                    procesarMensaje(record.value(), conn);
                 }
             }
+
+        } catch (SQLException e) {
+            System.err.println("[ERROR] No se pudo conectar a PostgreSQL: " + e.getMessage());
+            System.err.println("Verifique que la BD 'emergencias_db' exista y la tabla 'emergencias' este creada.");
         }
     }
 
-    private static void procesarMensaje(String json) {
+    private static void procesarMensaje(String json, Connection conn) {
         String zona      = extraerCampo(json, "zona");
         String tipo      = extraerCampo(json, "tipo");
         String prioridad = extraerCampo(json, "prioridad");
@@ -62,8 +87,31 @@ public class EmergenciaConsumer {
             System.out.println("  *** ALERTA PRIORIDAD ALTA *** Requiere atencion inmediata en " + zona);
         }
 
+        guardarEnBD(conn, zona, tipo, prioridad, hora);
+
         if (totalEmergencias % 5 == 0) {
             mostrarResumen();
+        }
+    }
+
+    private static void guardarEnBD(Connection conn, String zona, String tipo,
+                                    String prioridad, String horaStr) {
+        try (PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
+            LocalDateTime horaEmergencia = LocalDateTime.parse(horaStr, HORA_FORMATTER);
+
+            stmt.setString(1, zona);
+            stmt.setString(2, tipo);
+            stmt.setString(3, prioridad);
+            stmt.setTimestamp(4, Timestamp.valueOf(horaEmergencia));
+            stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println("  [BD] Emergencia guardada con ID: " + rs.getInt("id"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("  [BD ERROR] No se pudo guardar: " + e.getMessage());
         }
     }
 
@@ -92,7 +140,6 @@ public class EmergenciaConsumer {
         System.out.println("╚══════════════════════════════════════════════════╝\n");
     }
 
-    // Extrae el valor de un campo en un JSON simple sin dependencias externas
     private static String extraerCampo(String json, String campo) {
         String clave = "\"" + campo + "\":\"";
         int inicio = json.indexOf(clave);
