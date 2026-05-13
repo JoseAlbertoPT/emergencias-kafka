@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Emergencias Médicas CDMX</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f1f5f9;
+      --surface:   #ffffff;
+      --border:    #e2e8f0;
+      --text:      #1e293b;
+      --muted:     #64748b;
+      --accent: #0145fb;
+      --alta:      #dc2626;
+      --alta-bg:   #fee2e2;
+      --media:     #d97706;
+      --media-bg:  #fef3c7;
+      --baja:      #16a34a;
+      --baja-bg:   #dcfce7;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .logo {
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    header h1 { font-size: 1.15rem; font-weight: 600; }
+    header p  { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    #last-update { font-size: 0.78rem; color: var(--muted); }
+
+    #btn-refresh {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: opacity .2s;
+    }
+    #btn-refresh:hover { opacity: .85; }
+    #btn-refresh.spinning svg { animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    main { padding: 2rem; max-width: 1300px; margin: 0 auto; }
+   .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.5rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .card-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .card-value {
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .card-sub { font-size: 0.8rem; color: var(--muted); }
+
+    .card.alta   { border-left: 4px solid var(--alta);  }
+    .card.media  { border-left: 4px solid var(--media); }
+    .card.baja   { border-left: 4px solid var(--baja);  }
+    .card.accent { border-left: 4px solid var(--accent); }
+
+    .card.alta   .card-value { color: var(--alta);  }
+    .card.media  .card-value { color: var(--media); }
+    .card.baja   .card-value { color: var(--baja);  }
+    .card.accent .card-value { color: var(--accent); }
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f8fafc; }
+    th {
+      padding: 0.85rem 1.25rem;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+    td {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+    }
+    tbody tr:hover { background: rgba(99,102,241,.05); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; }
+    .badge-alta  { color: var(--alta);  background: var(--alta-bg);  }
+    .badge-media { color: var(--media); background: var(--media-bg); }
+    .badge-baja  { color: var(--baja);  background: var(--baja-bg);  }
+    .badge-alta::before  { background: var(--alta);  }
+    .badge-media::before { background: var(--media); }
+    .badge-baja::before  { background: var(--baja);  }
+
+    .zona-chip {
+      background: #e0e7ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.8rem;
+      color: #3730a3;
+    }
+
+    .id-col { color: var(--muted); font-size: 0.8rem; font-family: monospace; }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 700px) { .charts { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.5rem;
+    }
+    .chart-card h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 1.1rem; }
+
+    .bar-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .bar-label { width: 130px; font-size: 0.78rem; color: var(--muted); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
+    .bar-fill  { height: 100%; border-radius: 999px; background: var(--accent); transition: width .6s ease; }
+    .bar-count { width: 28px; text-align: right; font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+
+    <div>
+      <h1>Sistema de Emergencias Médicas — CDMX</h1>
+      <p>Monitor en tiempo real con  Apache Kafka </p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="last-update">Última actualización: —</span>
+    <button id="btn-refresh" onclick="refresh()">
+      <svg id="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+        <path d="M3.51 9a9 9 0 0114.36-3.36L23 10M1 14l5.13 4.36A9 9 0 0018.49 15"/>
+      </svg>
+      Actualizar
+    </button>
+  </div>
+</header>
+<main>
+  <div class="cards">
+    <div class="card accent">
+      <span class="card-label">Total emergencias</span>
+      <span class="card-value" id="stat-total">—</span>
+      <span class="card-sub">registradas en BD</span>
+    </div>
+    <div class="card alta">
+      <span class="card-label">Prioridad ALTA</span>
+      <span class="card-value" id="stat-alta">—</span>
+      <span class="card-sub" id="stat-alta-pct">—% del total</span>
+    </div>
+    <div class="card media">
+      <span class="card-label">Zona crítica</span>
+      <span class="card-value" id="stat-zona" style="font-size:1.3rem">—</span>
+      <span class="card-sub" id="stat-zona-count">— emergencias</span>
+    </div>
+    <div class="card baja">
+      <span class="card-label">Tipo más frecuente</span>
+      <span class="card-value" id="stat-tipo" style="font-size:1.1rem">—</span>
+      <span class="card-sub" id="stat-tipo-count">— casos</span>
+    </div>
+  </div>
+  <p class="section-title">Últimas 10 emergencias</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#&nbsp;ID</th>
+          <th>Hora</th>
+          <th>Zona</th>
+          <th>Tipo</th>
+          <th>Prioridad</th>
+          <th>Fecha registro</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-emergencias">
+        <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando datos…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Emergencias por zona</h3>
+      <div id="chart-zonas"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Emergencias por tipo</h3>
+      <div id="chart-tipos"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  BigData · mx.edu.bigdata · Emergencias Médicas CDMX &nbsp;|&nbsp; Apache Kafka 2.7 + PostgreSQL
+</footer>
+
+<script>
+  function badgeHtml(prioridad) {
+    const cls = prioridad === "ALTA" ? "alta" : prioridad === "MEDIA" ? "media" : "baja";
+    return `<span class="badge badge-${cls}">${prioridad}</span>`;
+  }
+
+  function renderTabla(emergencias) {
+    const tbody = document.getElementById("tabla-emergencias");
+    if (!emergencias || emergencias.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias registradas en la BD</td></tr>';
+      return;
+    }
+    tbody.innerHTML = emergencias.map(r => `
+      <tr>
+        <td class="id-col">${r.id}</td>
+        <td>${r.hora}</td>
+        <td><span class="zona-chip">${r.zona}</span></td>
+        <td>${r.tipo}</td>
+        <td>${badgeHtml(r.prioridad)}</td>
+        <td style="color:var(--muted);font-size:.8rem">${r.fecha_registro}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderStats(stats, zonas, tipos) {
+    const total   = stats.total || 0;
+    const alta    = stats.alta  || 0;
+    const zonaTop = zonas[0] || { zona: "—", total: 0 };
+    const tipoTop = tipos[0] || { tipo: "—", total: 0 };
+
+    document.getElementById("stat-total").textContent      = total;
+    document.getElementById("stat-alta").textContent       = alta;
+    document.getElementById("stat-alta-pct").textContent   = total > 0
+      ? Math.round(alta / total * 100) + "% del total" : "—";
+    document.getElementById("stat-zona").textContent       = zonaTop.zona;
+    document.getElementById("stat-zona-count").textContent = zonaTop.total + " emergencias";
+    document.getElementById("stat-tipo").textContent       = tipoTop.tipo;
+    document.getElementById("stat-tipo-count").textContent = tipoTop.total + " casos";
+  }
+
+  function renderBars(containerId, data, labelKey) {
+    const container = document.getElementById(containerId);
+    if (!data || data.length === 0) {
+      container.innerHTML = '<p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">Sin datos</p>';
+      return;
+    }
+    const max = data[0].total;
+    container.innerHTML = data.map(d => `
+      <div class="bar-row">
+        <span class="bar-label" title="${d[labelKey]}">${d[labelKey]}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${Math.round(d.total / max * 100)}%"></div>
+        </div>
+        <span class="bar-count">${d.total}</span>
+      </div>
+    `).join("");
+  }
+
+  async function refresh() {
+    const btn = document.getElementById("btn-refresh");
+    btn.classList.add("spinning");
+    btn.disabled = true;
+
+    try {
+      const res = await fetch("/api/dashboard");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      renderTabla(data.emergencias);
+      renderStats(data.stats, data.zonas, data.tipos);
+      renderBars("chart-zonas", data.zonas, "zona");
+      renderBars("chart-tipos", data.tipos, "tipo");
+
+      document.getElementById("last-update").textContent =
+        "Última actualización: " + new Date().toLocaleTimeString("es-MX");
+
+    } catch (err) {
+      console.error("Error al obtener datos:", err);
+      document.getElementById("tabla-emergencias").innerHTML =
+        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">
+           Error al conectar con la BD: ${err.message}
+         </td></tr>`;
+    } finally {
+      btn.classList.remove("spinning");
+      btn.disabled = false;
+    }
+  }
+
+  // Carga inicial y auto-refresco cada 5 segundos
+  refresh();
+  setInterval(refresh, 5000);
+</script>
+</body>
+</html>

@@ -25,9 +25,8 @@ public class EmergenciaProducer {
         "Paro Cardiorrespiratorio", "Quemaduras", "Intoxicacion"
     };
 
-    // ALTA aparece dos veces para reflejar mayor probabilidad
-    private static final String[] PRIORIDADES = {"ALTA", "ALTA", "MEDIA", "BAJA"};
 
+    private static final String[] PRIORIDADES = {"ALTA", "ALTA", "MEDIA", "BAJA"};
     private static final DateTimeFormatter FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

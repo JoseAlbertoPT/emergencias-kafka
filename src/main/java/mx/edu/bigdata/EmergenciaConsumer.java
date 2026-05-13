@@ -84,7 +84,7 @@ public class EmergenciaConsumer {
             hora, zona, tipo, prioridad);
 
         if ("ALTA".equals(prioridad)) {
-            System.out.println("  *** ALERTA PRIORIDAD ALTA *** Requiere atencion inmediata en " + zona);
+            System.out.println("   ALERTA PRIORIDAD ALTA *** Requiere atencion inmediata en " + zona);
         }
 
         guardarEnBD(conn, zona, tipo, prioridad, hora);
