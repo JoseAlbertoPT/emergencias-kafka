@@ -77,11 +77,7 @@
       animation: livepulse 1.6s ease infinite;
     }
     @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
-
-    /* ── MAIN ── */
     .main-container { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
-
-    /* ── TOPBAR ── */
     .topbar {
       background: var(--surface); border-bottom: 1px solid var(--border);
       padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between;
@@ -100,21 +96,17 @@
     #btn-refresh:hover { background: var(--accent-hover); }
     #btn-refresh.spinning svg { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .content { padding: 2rem; flex: 1; }
     .section { display: none; }
     .section.active { display: block; animation: fadeIn .22s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-
     .sec-header { margin-bottom: 1.5rem; }
     .sec-header h2 { font-size: 1.28rem; font-weight: 700; }
     .sec-header p  { font-size: .81rem; color: var(--muted); margin-top: .3rem; }
-
     .sec-label {
       font-size: .75rem; font-weight: 700; text-transform: uppercase;
       letter-spacing: .07em; color: var(--muted); margin-bottom: .85rem;
     }
-
     .kpi-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
       gap: 1.1rem; margin-bottom: 1.6rem;
@@ -139,11 +131,9 @@
     .kpi.k-media .kpi-value { color: var(--media); }
     .kpi.k-baja  .kpi-value { color: var(--baja); }
     .kpi-sub { font-size: .74rem; color: var(--muted); }
-
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
     .four-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
     @media (max-width: 900px) { .two-col,.four-col { grid-template-columns: 1fr; } }
-
     .chart-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
       padding: 1.35rem 1.4rem;
