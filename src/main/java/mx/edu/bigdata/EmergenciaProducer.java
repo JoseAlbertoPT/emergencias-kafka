@@ -64,7 +64,7 @@ public class EmergenciaProducer {
                     }
                 });
 
-                Thread.sleep(3000);
+                Thread.sleep(500);
             }
         }
     }

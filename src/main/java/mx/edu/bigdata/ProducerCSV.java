@@ -19,6 +19,7 @@ public class ProducerCSV {
     // Indices de columnas en el CSV
     private static final int IDX_FOLIO            = 0;
     private static final int IDX_INCIDENTE        = 2;
+    private static final int IDX_FECHA_CREACION   = 5;
     private static final int IDX_HORA_CREACION    = 6;
     private static final int IDX_CLAS_ALARMA      = 12;
     private static final int IDX_ALCALDIA         = 13;
@@ -56,7 +57,7 @@ public class ProducerCSV {
 
                     String folio    = cols[IDX_FOLIO].trim();
                     String tipo     = cols[IDX_INCIDENTE].trim();
-                    String hora     = cols[IDX_HORA_CREACION].trim();
+                    String hora     = cols[IDX_FECHA_CREACION].trim() + " " + cols[IDX_HORA_CREACION].trim();
                     String alarma   = cols[IDX_CLAS_ALARMA].trim();
                     String zona     = cols[IDX_ALCALDIA].trim();
 

@@ -101,7 +101,6 @@
     #btn-refresh.spinning svg { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── CONTENT ── */
     .content { padding: 2rem; flex: 1; }
     .section { display: none; }
     .section.active { display: block; animation: fadeIn .22s ease; }
@@ -116,7 +115,6 @@
       letter-spacing: .07em; color: var(--muted); margin-bottom: .85rem;
     }
 
-    /* ── KPI CARDS ── */
     .kpi-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
       gap: 1.1rem; margin-bottom: 1.6rem;
@@ -142,12 +140,10 @@
     .kpi.k-baja  .kpi-value { color: var(--baja); }
     .kpi-sub { font-size: .74rem; color: var(--muted); }
 
-    /* ── GRID LAYOUTS ── */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
     .four-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
     @media (max-width: 900px) { .two-col,.four-col { grid-template-columns: 1fr; } }
 
-    /* ── CHART CARDS ── */
     .chart-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
       padding: 1.35rem 1.4rem;
@@ -159,7 +155,6 @@
     .chart-container.md { height: 270px; }
     .chart-container.lg { height: 330px; }
 
-    /* ── TABLE ── */
     .table-wrap {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; overflow: hidden; margin-bottom: 1.6rem;
@@ -200,8 +195,6 @@
       padding: .17rem .52rem; font-size: .76rem; color: #3730a3; font-weight: 500;
     }
     .id-col { color: var(--muted); font-size: .76rem; font-family: monospace; }
-
-    /* ── SEARCH ── */
     .search-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; padding: 1.4rem; margin-bottom: 1.2rem;
@@ -242,13 +235,9 @@
     .stat-pill-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
     .stat-pill-value { font-size: 1.4rem; font-weight: 800; }
     .search-info { font-size: .76rem; color: var(--muted); padding: .3rem 0 .8rem; }
-
-    /* ── EMPTY ── */
     .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
     .empty-icon  { font-size: 2rem; margin-bottom: .6rem; }
     .empty-state p { font-size: .83rem; }
-
-    /* ── FOOTER ── */
     footer {
       text-align: center; padding: 1.1rem; font-size: .7rem;
       color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);
@@ -265,7 +254,7 @@
 <body>
 <div class="app-shell">
 
-  <!-- ════ SIDEBAR ════ -->
+  <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon"></div>
@@ -315,7 +304,7 @@
     </div>
   </nav>
 
-  <!-- ════ MAIN ════ -->
+  <!--  MAIN -->
   <div class="main-container">
     <header class="topbar">
       <div>
@@ -337,7 +326,7 @@
 
     <main class="content">
 
-      <!-- ══ INICIO ══ -->
+      <!-- INICIO -->
       <section id="sec-inicio" class="section active">
         <div class="sec-header">
           <h2>Panel de Control</h2>
@@ -392,7 +381,7 @@
         </div>
       </section>
 
-      <!-- ══ DATOS ══ -->
+      <!-- DATOS -->
       <section id="sec-datos" class="section">
         <div class="sec-header">
           <h2>Registro de Emergencias</h2>
@@ -429,7 +418,7 @@
         </div>
       </section>
 
-      <!-- ══ GRÁFICAS ══ -->
+      <!--  GRÁFICAS -->
       <section id="sec-graficas" class="section">
         <div class="sec-header">
           <h2>Análisis Visual</h2>
@@ -464,7 +453,7 @@
         </div>
       </section>
 
-      <!-- ══ BÚSQUEDA AVANZADA ══ -->
+      <!--  BÚSQUEDA AVANZADA  -->
       <section id="sec-busqueda" class="section">
         <div class="sec-header">
           <h2>Búsqueda Avanzada</h2>
@@ -530,24 +519,19 @@
           </div>
         </div>
       </section>
-
     </main>
-    <footer>Sistema de Emergencias Médicas CDMX &nbsp;·&nbsp; Apache Kafka + PostgreSQL</footer>
+    <footer>Sistema de Emergencias Médicas CDMX &nbsp;</footer>
   </div>
 </div>
 
 <script>
-// ── State & constants ──────────────────────────────────────────
 let data = null;
 const CH  = {};
 
 const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
 const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
 const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
-
 const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };
-
-// ── Navigation ─────────────────────────────────────────────────
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const s = item.dataset.s;
@@ -559,10 +543,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
     if (s === 'graficas' && data) renderGraficas();
   });
 });
-
-// ── Chart helpers ──────────────────────────────────────────────
 function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
-
 function mkBar(id, labels, values, colors, indexAxis='x') {
   kill(id);
   CH[id] = new Chart(document.getElementById(id), {
@@ -629,13 +610,11 @@ function mkPie(id, labels, values, colors) {
   });
 }
 
-// ── Badge HTML ─────────────────────────────────────────────────
 function badge(p) {
   const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';
   return `<span class="badge badge-${cls}">${p}</span>`;
 }
 
-// ── Row HTML ───────────────────────────────────────────────────
 function rowHtml(r, short) {
   return short
     ? `<tr>
@@ -655,7 +634,6 @@ function rowHtml(r, short) {
        </tr>`;
 }
 
-// ── Render Inicio ──────────────────────────────────────────────
 function renderInicio() {
   const { stats, zonas, tipos, emergencias } = data;
   const total = stats.total || 0;
@@ -681,7 +659,6 @@ function renderInicio() {
   mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);
 }
 
-// ── Render Datos ───────────────────────────────────────────────
 function renderDatos() {
   const { emergencias, zonas, tipos } = data;
   document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';
@@ -697,7 +674,7 @@ function renderDatos() {
         tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
 }
 
-// ── Render Gráficas ────────────────────────────────────────────
+//Render Gráficas
 function renderGraficas() {
   const { emergencias, zonas, tipos, stats } = data;
   const total = stats.total || 0;
@@ -734,7 +711,7 @@ function renderGraficas() {
     zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
 }
 
-// ── Search ─────────────────────────────────────────────────────
+
 function populateFilters() {
   const zSel = document.getElementById('f-zona');
   const tSel = document.getElementById('f-tipo');
@@ -799,7 +776,6 @@ function limpiar() {
   document.getElementById('b-info').textContent = '';
 }
 
-// ── Main fetch ─────────────────────────────────────────────────
 async function doRefresh() {
   const btn = document.getElementById('btn-refresh');
   btn.classList.add('spinning'); btn.disabled = true;
@@ -809,14 +785,11 @@ async function doRefresh() {
     const json = await res.json();
     if (json.error) throw new Error(json.error);
     data = json;
-
     renderInicio();
     renderDatos();
     populateFilters();
-
     const active = document.querySelector('.nav-item.active')?.dataset.s;
     if (active === 'graficas') renderGraficas();
-
     document.getElementById('last-update').textContent =
       'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
   } catch (err) {

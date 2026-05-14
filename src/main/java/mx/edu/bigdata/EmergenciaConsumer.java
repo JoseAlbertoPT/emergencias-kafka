@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +33,6 @@ public class EmergenciaConsumer {
         "INSERT INTO emergencias (zona, tipo, prioridad, hora, fecha_registro) " +
         "VALUES (?, ?, ?, ?, ?) RETURNING id";
 
-    private static final DateTimeFormatter HORA_FORMATTER =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static int totalEmergencias = 0;
     private static final Map<String, Integer> conteoZonas = new HashMap<>();
@@ -97,12 +94,10 @@ public class EmergenciaConsumer {
     private static void guardarEnBD(Connection conn, String zona, String tipo,
                                     String prioridad, String horaStr) {
         try (PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
-            LocalDateTime horaEmergencia = LocalDateTime.parse(horaStr, HORA_FORMATTER);
-
             stmt.setString(1, zona);
             stmt.setString(2, tipo);
             stmt.setString(3, prioridad);
-            stmt.setTimestamp(4, Timestamp.valueOf(horaEmergencia));
+            stmt.setString(4, horaStr);
             stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
 
             try (ResultSet rs = stmt.executeQuery()) {
