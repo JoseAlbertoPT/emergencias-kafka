@@ -1,8 +1,6 @@
 package mx.edu.bigdata;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -11,12 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
-
 public class ServidorWeb {
-
     private static final int    PUERTO    = 3000;
     private static final String DASHBOARD = "dashboard.html";
-
     private static final String DB_URL  = "jdbc:postgresql://localhost:5432/emergencias_db";
     private static final String DB_USER = "postgres";
     private static final String DB_PASS = "postgres123";
@@ -31,9 +26,7 @@ public class ServidorWeb {
             System.err.println("        Ejecuta el servidor desde la raiz del proyecto.");
             System.exit(1);
         }
-
         HttpServer server = HttpServer.create(new InetSocketAddress(PUERTO), 0);
-
         server.createContext("/api/dashboard", exchange -> {
             if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
                 responder(exchange, 405, "text/plain", "Metodo no permitido");
@@ -55,7 +48,6 @@ public class ServidorWeb {
                 System.err.println("[ERROR API] " + e.getMessage());
             }
         });
-
         server.createContext("/", exchange -> {
             if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
                 responder(exchange, 405, "text/plain", "Metodo no permitido");
@@ -74,15 +66,11 @@ public class ServidorWeb {
                 System.err.println("[ERROR] " + e.getMessage());
             }
         });
-
         server.start();
-        System.out.println("╔══════════════════════════════════════════╗");
-        System.out.println("║   ServidorWeb iniciado                   ║");
-        System.out.printf( "║   http://localhost:%-22d║%n", PUERTO);
-        System.out.println("║   Ctrl+C para detener                    ║");
-        System.out.println("╚══════════════════════════════════════════╝");
+        System.out.println("   ServidorWeb iniciado  " );
+        System.out.printf( "  http://localhost:%-22d %n", PUERTO);
+        System.out.println("  Ctrl+C para detener  ");
     }
-
     private static String obtenerDatosDashboard() throws SQLException {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
             StringBuilder sb = new StringBuilder("{");
@@ -108,7 +96,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("],");
-
             // Totales generales
             sb.append("\"stats\":{");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -122,7 +109,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("},");
-
             // Por zona
             sb.append("\"zonas\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -138,7 +124,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("],");
-
             // Por tipo
             sb.append("\"tipos\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -154,17 +139,14 @@ public class ServidorWeb {
                 }
             }
             sb.append("]");
-
             sb.append("}");
             return sb.toString();
         }
     }
-
     private static String escape(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
-
     private static void responder(HttpExchange ex, int status, String contentType, String msg)
             throws IOException {
         byte[] body = msg.getBytes("UTF-8");
@@ -174,7 +156,6 @@ public class ServidorWeb {
             out.write(body);
         }
     }
-
     private static String ahora() {
         return java.time.LocalDateTime.now().format(
             java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));

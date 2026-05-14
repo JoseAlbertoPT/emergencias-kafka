@@ -4,375 +4,835 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — Emergencias Médicas CDMX</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #f1f5f9;
-      --surface:   #ffffff;
-      --border:    #e2e8f0;
-      --text:      #1e293b;
-      --muted:     #64748b;
-      --accent: #0145fb;
-      --alta:      #dc2626;
-      --alta-bg:   #fee2e2;
-      --media:     #d97706;
-      --media-bg:  #fef3c7;
-      --baja:      #16a34a;
-      --baja-bg:   #dcfce7;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #268cba;
+      --accent-hover: #1a6f99;
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #94a3b8;
+      --sidebar-hover: rgba(255,255,255,.07);
+      --sidebar-active-bg: rgba(38,140,186,.18);
+      --sidebar-active-text: #60c8f5;
+      --alta: #ef4444;
+      --alta-bg: #fee2e2;
+      --media: #f59e0b;
+      --media-bg: #fef3c7;
+      --baja: #22c55e;
+      --baja-bg: #dcfce7;
     }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
+    /* ── APP SHELL ── */
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; background: var(--sidebar-bg);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
     }
-
-    /* ── Header ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 1.25rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .sidebar-logo {
+      padding: 1.4rem 1.2rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: .75rem;
     }
-    .header-left { display: flex; align-items: center; gap: 0.75rem; }
-    .logo {
-      width: 40px; height: 40px;
-      background: var(--accent);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
+    .logo-icon {
+      width: 38px; height: 38px; background: var(--accent); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;
     }
-    header h1 { font-size: 1.15rem; font-weight: 600; }
-    header p  { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+    .logo-text h2 { font-size: .8rem; font-weight: 700; color: #fff; letter-spacing: .02em; line-height: 1.3; }
+    .logo-text p  { font-size: .67rem; color: var(--sidebar-text); margin-top: 2px; }
 
-    .header-right { display: flex; align-items: center; gap: 1rem; }
-    #last-update { font-size: 0.78rem; color: var(--muted); }
+    .nav-list { list-style: none; padding: 1rem .7rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
+    .nav-item { border-radius: 9px; cursor: pointer; }
+    .nav-link {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .68rem .85rem;
+      color: var(--sidebar-text); font-size: .84rem; font-weight: 500;
+      border-radius: 9px; transition: color .15s, background .15s; user-select: none;
+    }
+    .nav-link:hover { background: var(--sidebar-hover); color: #fff; }
+    .nav-item.active .nav-link { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }
+    .nav-icon { width: 17px; height: 17px; flex-shrink: 0; }
 
+    .sidebar-foot {
+      padding: 1rem 1.2rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .live-pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.22);
+      border-radius: 999px; padding: .28rem .7rem;
+      font-size: .7rem; color: #4ade80; font-weight: 600;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
+      animation: livepulse 1.6s ease infinite;
+    }
+    @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
+
+    /* ── MAIN ── */
+    .main-container { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-size: .98rem; font-weight: 700; }
+    .topbar-sub   { font-size: .73rem; color: var(--muted); margin-top: 1px; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    #last-update  { font-size: .74rem; color: var(--muted); }
     #btn-refresh {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1.1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex; align-items: center; gap: 0.4rem;
-      transition: opacity .2s;
+      background: var(--accent); color: #fff; border: none;
+      padding: .48rem 1.05rem; border-radius: 8px; font-size: .81rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: .38rem;
+      transition: background .2s;
     }
-    #btn-refresh:hover { opacity: .85; }
+    #btn-refresh:hover { background: var(--accent-hover); }
     #btn-refresh.spinning svg { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    main { padding: 2rem; max-width: 1300px; margin: 0 auto; }
-   .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2rem;
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.4rem 1.5rem;
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-    .card-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .card-value {
-      font-size: 2.1rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .card-sub { font-size: 0.8rem; color: var(--muted); }
 
-    .card.alta   { border-left: 4px solid var(--alta);  }
-    .card.media  { border-left: 4px solid var(--media); }
-    .card.baja   { border-left: 4px solid var(--baja);  }
-    .card.accent { border-left: 4px solid var(--accent); }
+    /* ── CONTENT ── */
+    .content { padding: 2rem; flex: 1; }
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn .22s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
 
-    .card.alta   .card-value { color: var(--alta);  }
-    .card.media  .card-value { color: var(--media); }
-    .card.baja   .card-value { color: var(--baja);  }
-    .card.accent .card-value { color: var(--accent); }
-    .section-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: var(--muted);
-      margin-bottom: 1rem;
+    .sec-header { margin-bottom: 1.5rem; }
+    .sec-header h2 { font-size: 1.28rem; font-weight: 700; }
+    .sec-header p  { font-size: .81rem; color: var(--muted); margin-top: .3rem; }
+
+    .sec-label {
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--muted); margin-bottom: .85rem;
     }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+      gap: 1.1rem; margin-bottom: 1.6rem;
+    }
+    .kpi {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.35rem 1.4rem; display: flex; flex-direction: column; gap: .38rem;
+      position: relative; overflow: hidden;
+    }
+    .kpi::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
+    }
+    .kpi.k-total::after { background: var(--accent); }
+    .kpi.k-alta::after  { background: var(--alta); }
+    .kpi.k-media::after { background: var(--media); }
+    .kpi.k-baja::after  { background: var(--baja); }
+    .kpi-icon { font-size: 1.3rem; margin-bottom: .15rem; }
+    .kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+    .kpi.k-total .kpi-value { color: var(--accent); }
+    .kpi.k-alta  .kpi-value { color: var(--alta); }
+    .kpi.k-media .kpi-value { color: var(--media); }
+    .kpi.k-baja  .kpi-value { color: var(--baja); }
+    .kpi-sub { font-size: .74rem; color: var(--muted); }
+
+    /* ── GRID LAYOUTS ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
+    .four-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
+    @media (max-width: 900px) { .two-col,.four-col { grid-template-columns: 1fr; } }
+
+    /* ── CHART CARDS ── */
+    .chart-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.35rem 1.4rem;
+    }
+    .chart-card h3    { font-size: .87rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
+    .chart-card .csub { font-size: .73rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .chart-container { position: relative; }
+    .chart-container.sm { height: 200px; }
+    .chart-container.md { height: 270px; }
+    .chart-container.lg { height: 330px; }
+
+    /* ── TABLE ── */
     .table-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: 2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 1.6rem;
+    }
+    .table-header {
+      padding: .9rem 1.4rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-header h3  { font-size: .87rem; font-weight: 600; }
+    .table-badge {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 999px; padding: .18rem .65rem;
+      font-size: .7rem; color: var(--muted); font-weight: 600;
     }
     table { width: 100%; border-collapse: collapse; }
     thead tr { background: #f8fafc; }
     th {
-      padding: 0.85rem 1.25rem;
-      text-align: left;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
+      padding: .78rem 1.2rem; text-align: left;
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--muted);
     }
-    td {
-      padding: 0.9rem 1.25rem;
-      font-size: 0.875rem;
-      border-top: 1px solid var(--border);
-    }
-    tbody tr:hover { background: rgba(99,102,241,.05); }
+    td { padding: .82rem 1.2rem; font-size: .84rem; border-top: 1px solid var(--border); }
+    tbody tr:hover { background: rgba(38,140,186,.04); }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: .04em;
+      display: inline-flex; align-items: center; gap: .28rem;
+      padding: .2rem .6rem; border-radius: 999px; font-size: .71rem; font-weight: 700;
     }
-    .badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
     .badge-alta  { color: var(--alta);  background: var(--alta-bg);  }
     .badge-media { color: var(--media); background: var(--media-bg); }
     .badge-baja  { color: var(--baja);  background: var(--baja-bg);  }
     .badge-alta::before  { background: var(--alta);  }
     .badge-media::before { background: var(--media); }
     .badge-baja::before  { background: var(--baja);  }
-
     .zona-chip {
-      background: #e0e7ff;
-      border: 1px solid #c7d2fe;
-      border-radius: 6px;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.8rem;
-      color: #3730a3;
+      background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 6px;
+      padding: .17rem .52rem; font-size: .76rem; color: #3730a3; font-weight: 500;
     }
+    .id-col { color: var(--muted); font-size: .76rem; font-family: monospace; }
 
-    .id-col { color: var(--muted); font-size: 0.8rem; font-family: monospace; }
-    .charts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
+    /* ── SEARCH ── */
+    .search-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.4rem; margin-bottom: 1.2rem;
     }
-    @media (max-width: 700px) { .charts { grid-template-columns: 1fr; } }
-
-    .chart-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.4rem 1.5rem;
+    .search-card h3 { font-size: .87rem; font-weight: 600; margin-bottom: 1rem; }
+    .filter-grid {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+      gap: .9rem; align-items: end;
     }
-    .chart-card h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 1.1rem; }
-
-    .bar-row {
-      display: flex; align-items: center; gap: 0.75rem;
-      margin-bottom: 0.65rem;
+    .fgroup { display: flex; flex-direction: column; gap: .35rem; }
+    .fgroup label { font-size: .7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .fgroup select, .fgroup input {
+      padding: .52rem .7rem; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: .84rem; color: var(--text);
+      background: var(--bg); outline: none; transition: border-color .15s;
     }
-    .bar-label { width: 130px; font-size: 0.78rem; color: var(--muted); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { flex: 1; background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
-    .bar-fill  { height: 100%; border-radius: 999px; background: var(--accent); transition: width .6s ease; }
-    .bar-count { width: 28px; text-align: right; font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
+    .fgroup select:focus, .fgroup input:focus { border-color: var(--accent); }
+    .factions { display: flex; gap: .55rem; align-items: flex-end; }
+    .btn-primary {
+      background: var(--accent); color: #fff; border: none;
+      padding: .52rem 1.15rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-ghost {
+      background: var(--bg); color: var(--muted); border: 1.5px solid var(--border);
+      padding: .52rem .9rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
+      cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── Footer ── */
+    .stats-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+    .stat-pill {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: .65rem 1rem;
+      display: flex; flex-direction: column; gap: .18rem; min-width: 110px;
+    }
+    .stat-pill-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+    .stat-pill-value { font-size: 1.4rem; font-weight: 800; }
+    .search-info { font-size: .76rem; color: var(--muted); padding: .3rem 0 .8rem; }
+
+    /* ── EMPTY ── */
+    .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+    .empty-icon  { font-size: 2rem; margin-bottom: .6rem; }
+    .empty-state p { font-size: .83rem; }
+
+    /* ── FOOTER ── */
     footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
+      text-align: center; padding: 1.1rem; font-size: .7rem;
+      color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-container { margin-left: 0; }
+      .content { padding: 1rem; }
+      .topbar { padding: .85rem 1rem; }
     }
   </style>
 </head>
 <body>
+<div class="app-shell">
 
-<header>
-  <div class="header-left">
+  <!-- ════ SIDEBAR ════ -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🚑</div>
+      <div class="logo-text">
+        <h2>Emergencias CDMX</h2>
+        <p>Monitor en tiempo real</p>
+      </div>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" data-s="inicio">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Inicio
+        </div>
+      </li>
+      <li class="nav-item" data-s="datos">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
+          </svg>
+          Datos
+        </div>
+      </li>
+      <li class="nav-item" data-s="graficas">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+          </svg>
+          Gráficas
+        </div>
+      </li>
+      <li class="nav-item" data-s="busqueda">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+          Búsqueda Avanzada
+        </div>
+      </li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="live-pill"><span class="live-dot"></span>EN VIVO · Kafka</div>
+    </div>
+  </nav>
 
-    <div>
-      <h1>Sistema de Emergencias Médicas — CDMX</h1>
-      <p>Monitor en tiempo real con  Apache Kafka </p>
-    </div>
-  </div>
-  <div class="header-right">
-    <span id="last-update">Última actualización: —</span>
-    <button id="btn-refresh" onclick="refresh()">
-      <svg id="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
-        <path d="M3.51 9a9 9 0 0114.36-3.36L23 10M1 14l5.13 4.36A9 9 0 0018.49 15"/>
-      </svg>
-      Actualizar
-    </button>
-  </div>
-</header>
-<main>
-  <div class="cards">
-    <div class="card accent">
-      <span class="card-label">Total emergencias</span>
-      <span class="card-value" id="stat-total">—</span>
-      <span class="card-sub">registradas en BD</span>
-    </div>
-    <div class="card alta">
-      <span class="card-label">Prioridad ALTA</span>
-      <span class="card-value" id="stat-alta">—</span>
-      <span class="card-sub" id="stat-alta-pct">—% del total</span>
-    </div>
-    <div class="card media">
-      <span class="card-label">Zona crítica</span>
-      <span class="card-value" id="stat-zona" style="font-size:1.3rem">—</span>
-      <span class="card-sub" id="stat-zona-count">— emergencias</span>
-    </div>
-    <div class="card baja">
-      <span class="card-label">Tipo más frecuente</span>
-      <span class="card-value" id="stat-tipo" style="font-size:1.1rem">—</span>
-      <span class="card-sub" id="stat-tipo-count">— casos</span>
-    </div>
-  </div>
-  <p class="section-title">Últimas 10 emergencias</p>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#&nbsp;ID</th>
-          <th>Hora</th>
-          <th>Zona</th>
-          <th>Tipo</th>
-          <th>Prioridad</th>
-          <th>Fecha registro</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-emergencias">
-        <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando datos…</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- ════ MAIN ════ -->
+  <div class="main-container">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="page-title">Inicio</div>
+        <div class="topbar-sub">Apache Kafka + PostgreSQL · Auto-actualización cada 5 s</div>
+      </div>
+      <div class="topbar-right">
+        <span id="last-update">Última actualización: —</span>
+        <button id="btn-refresh" onclick="doRefresh()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0114.36-3.36L23 10M1 14l5.13 4.36A9 9 0 0018.49 15"/>
+          </svg>
+          Actualizar
+        </button>
+      </div>
+    </header>
 
-  <div class="charts">
-    <div class="chart-card">
-      <h3>Emergencias por zona</h3>
-      <div id="chart-zonas"></div>
-    </div>
-    <div class="chart-card">
-      <h3>Emergencias por tipo</h3>
-      <div id="chart-tipos"></div>
-    </div>
+    <main class="content">
+
+      <!-- ══ INICIO ══ -->
+      <section id="sec-inicio" class="section active">
+        <div class="sec-header">
+          <h2>Panel de Control</h2>
+          <p>Resumen ejecutivo de emergencias médicas en tiempo real</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi k-total">
+            <div class="kpi-icon">📊</div>
+            <span class="kpi-label">Total registradas</span>
+            <span class="kpi-value" id="kpi-total">—</span>
+            <span class="kpi-sub">en la base de datos</span>
+          </div>
+          <div class="kpi k-alta">
+            <div class="kpi-icon">🔴</div>
+            <span class="kpi-label">Prioridad Alta</span>
+            <span class="kpi-value" id="kpi-alta">—</span>
+            <span class="kpi-sub" id="kpi-alta-pct">—% del total</span>
+          </div>
+          <div class="kpi k-media">
+            <div class="kpi-icon">📍</div>
+            <span class="kpi-label">Zona más crítica</span>
+            <span class="kpi-value" id="kpi-zona" style="font-size:1.15rem">—</span>
+            <span class="kpi-sub" id="kpi-zona-n">— emergencias</span>
+          </div>
+          <div class="kpi k-baja">
+            <div class="kpi-icon">🏥</div>
+            <span class="kpi-label">Tipo más frecuente</span>
+            <span class="kpi-value" id="kpi-tipo" style="font-size:.95rem">—</span>
+            <span class="kpi-sub" id="kpi-tipo-n">— casos</span>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <p class="sec-label">Últimas 5 emergencias</p>
+            <div class="table-wrap" style="margin-bottom:0">
+              <table>
+                <thead><tr><th>#ID</th><th>Zona</th><th>Tipo</th><th>Prioridad</th><th>Hora</th></tr></thead>
+                <tbody id="tabla-inicio">
+                  <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p class="sec-label">Distribución de prioridades</p>
+            <div class="chart-card" style="margin-bottom:0">
+              <p class="csub">Basado en últimas 10 emergencias</p>
+              <div class="chart-container md"><canvas id="ch-inicio-prio"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ DATOS ══ -->
+      <section id="sec-datos" class="section">
+        <div class="sec-header">
+          <h2>Registro de Emergencias</h2>
+          <p>Historial completo de las últimas emergencias procesadas por Kafka</p>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Emergencias recientes</h3>
+            <span class="table-badge" id="datos-badge">— registros</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
+                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-datos">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Emergencias por zona</h3>
+            <p class="csub">Ordenado por volumen total</p>
+            <div class="chart-container md"><canvas id="ch-datos-zonas"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Distribución por tipo</h3>
+            <p class="csub">Todos los tipos de emergencia registrados</p>
+            <div class="chart-container md"><canvas id="ch-datos-tipos"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ GRÁFICAS ══ -->
+      <section id="sec-graficas" class="section">
+        <div class="sec-header">
+          <h2>Análisis Visual</h2>
+          <p>Visualizaciones interactivas con Chart.js — datos en tiempo real</p>
+        </div>
+        <div class="four-col">
+          <div class="chart-card">
+            <h3>Prioridades</h3>
+            <p class="csub">Distribución ALTA / MEDIA / BAJA</p>
+            <div class="chart-container md"><canvas id="ch-g-prio"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Por zona geográfica</h3>
+            <p class="csub">Cantidad de emergencias por zona</p>
+            <div class="chart-container md"><canvas id="ch-g-zonas"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Por tipo de emergencia</h3>
+            <p class="csub">Distribución de tipos atendidos</p>
+            <div class="chart-container md"><canvas id="ch-g-tipos"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Actividad por hora</h3>
+            <p class="csub">Últimas 10 emergencias agrupadas por hora</p>
+            <div class="chart-container md"><canvas id="ch-g-horas"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Vista comparativa — Todas las zonas</h3>
+          <p class="csub">Barras horizontales por volumen acumulado</p>
+          <div class="chart-container lg"><canvas id="ch-g-horiz"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ══ BÚSQUEDA AVANZADA ══ -->
+      <section id="sec-busqueda" class="section">
+        <div class="sec-header">
+          <h2>Búsqueda Avanzada</h2>
+          <p>Filtra emergencias por zona, tipo y nivel de prioridad</p>
+        </div>
+        <div class="search-card">
+          <h3>Filtros</h3>
+          <div class="filter-grid">
+            <div class="fgroup">
+              <label>Zona</label>
+              <select id="f-zona"><option value="">Todas las zonas</option></select>
+            </div>
+            <div class="fgroup">
+              <label>Tipo</label>
+              <select id="f-tipo"><option value="">Todos los tipos</option></select>
+            </div>
+            <div class="fgroup">
+              <label>Prioridad</label>
+              <select id="f-prio">
+                <option value="">Todas</option>
+                <option value="ALTA">Alta</option>
+                <option value="MEDIA">Media</option>
+                <option value="BAJA">Baja</option>
+              </select>
+            </div>
+            <div class="factions">
+              <button class="btn-primary" onclick="buscar()">Buscar</button>
+              <button class="btn-ghost"   onclick="limpiar()">Limpiar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="b-stats" class="stats-row" style="display:none"></div>
+        <p class="search-info" id="b-info"></p>
+
+        <div class="table-wrap" id="b-wrap" style="display:none">
+          <div class="table-header">
+            <h3>Resultados</h3>
+            <span class="table-badge" id="b-count">0 resultados</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
+                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-busqueda"></tbody>
+          </table>
+        </div>
+
+        <div id="b-charts" style="display:none">
+          <p class="sec-label" style="margin-top:.5rem">Distribución en resultados</p>
+          <div class="two-col">
+            <div class="chart-card">
+              <h3>Zonas en resultados</h3>
+              <div class="chart-container sm"><canvas id="ch-b-zonas"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h3>Prioridades en resultados</h3>
+              <div class="chart-container sm"><canvas id="ch-b-prio"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+    <footer>Sistema de Emergencias Médicas CDMX &nbsp;·&nbsp; Apache Kafka + PostgreSQL</footer>
   </div>
-
-</main>
-
-<footer>
-  BigData · mx.edu.bigdata · Emergencias Médicas CDMX &nbsp;|&nbsp; Apache Kafka 2.7 + PostgreSQL
-</footer>
+</div>
 
 <script>
-  function badgeHtml(prioridad) {
-    const cls = prioridad === "ALTA" ? "alta" : prioridad === "MEDIA" ? "media" : "baja";
-    return `<span class="badge badge-${cls}">${prioridad}</span>`;
-  }
+// ── State & constants ──────────────────────────────────────────
+let data = null;
+const CH  = {};
 
-  function renderTabla(emergencias) {
-    const tbody = document.getElementById("tabla-emergencias");
-    if (!emergencias || emergencias.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias registradas en la BD</td></tr>';
-      return;
+const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
+const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
+const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
+
+const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };
+
+// ── Navigation ─────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const s = item.dataset.s;
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('sec-' + s).classList.add('active');
+    document.getElementById('page-title').textContent = PAGE_TITLES[s];
+    if (s === 'graficas' && data) renderGraficas();
+  });
+});
+
+// ── Chart helpers ──────────────────────────────────────────────
+function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
+
+function mkBar(id, labels, values, colors, indexAxis='x') {
+  kill(id);
+  CH[id] = new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors.map(c => c + 'bb'),
+        borderColor: colors,
+        borderWidth: 1.5,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+        [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
     }
-    tbody.innerHTML = emergencias.map(r => `
-      <tr>
+  });
+}
+
+function mkDoughnut(id, labels, values, colors, legendPos='bottom') {
+  kill(id);
+  const total = values.reduce((a,b)=>a+b,0);
+  CH[id] = new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },
+        tooltip: { callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`
+        }}
+      }
+    }
+  });
+}
+
+function mkPie(id, labels, values, colors) {
+  kill(id);
+  CH[id] = new Chart(document.getElementById(id), {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }
+    }
+  });
+}
+
+// ── Badge HTML ─────────────────────────────────────────────────
+function badge(p) {
+  const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';
+  return `<span class="badge badge-${cls}">${p}</span>`;
+}
+
+// ── Row HTML ───────────────────────────────────────────────────
+function rowHtml(r, short) {
+  return short
+    ? `<tr>
+        <td class="id-col">${r.id}</td>
+        <td><span class="zona-chip">${r.zona}</span></td>
+        <td>${r.tipo}</td>
+        <td>${badge(r.prioridad)}</td>
+        <td style="color:var(--muted);font-size:.76rem">${r.hora.slice(11,16)}</td>
+       </tr>`
+    : `<tr>
         <td class="id-col">${r.id}</td>
         <td>${r.hora}</td>
         <td><span class="zona-chip">${r.zona}</span></td>
         <td>${r.tipo}</td>
-        <td>${badgeHtml(r.prioridad)}</td>
-        <td style="color:var(--muted);font-size:.8rem">${r.fecha_registro}</td>
-      </tr>
-    `).join("");
+        <td>${badge(r.prioridad)}</td>
+        <td style="color:var(--muted);font-size:.76rem">${r.fecha_registro}</td>
+       </tr>`;
+}
+
+// ── Render Inicio ──────────────────────────────────────────────
+function renderInicio() {
+  const { stats, zonas, tipos, emergencias } = data;
+  const total = stats.total || 0;
+  const alta  = stats.alta  || 0;
+  const zonaTop = zonas[0] || { zona: '—', total: 0 };
+  const tipoTop = tipos[0] || { tipo: '—', total: 0 };
+
+  document.getElementById('kpi-total').textContent    = total;
+  document.getElementById('kpi-alta').textContent     = alta;
+  document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';
+  document.getElementById('kpi-zona').textContent     = zonaTop.zona;
+  document.getElementById('kpi-zona-n').textContent   = zonaTop.total + ' emergencias';
+  document.getElementById('kpi-tipo').textContent     = tipoTop.tipo;
+  document.getElementById('kpi-tipo-n').textContent   = tipoTop.total + ' casos';
+
+  const tb = document.getElementById('tabla-inicio');
+  tb.innerHTML = emergencias && emergencias.length
+    ? emergencias.slice(0,5).map(r => rowHtml(r, true)).join('')
+    : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Sin datos</td></tr>';
+
+  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
+  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
+  mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);
+}
+
+// ── Render Datos ───────────────────────────────────────────────
+function renderDatos() {
+  const { emergencias, zonas, tipos } = data;
+  document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';
+
+  const tb = document.getElementById('tabla-datos');
+  tb.innerHTML = emergencias && emergencias.length
+    ? emergencias.map(r => rowHtml(r, false)).join('')
+    : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias</td></tr>';
+
+  mkBar('ch-datos-zonas', zonas.map(z=>z.zona), zonas.map(z=>z.total),
+        zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+  mkPie('ch-datos-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
+        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
+}
+
+// ── Render Gráficas ────────────────────────────────────────────
+function renderGraficas() {
+  const { emergencias, zonas, tipos, stats } = data;
+  const total = stats.total || 0;
+
+  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
+  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
+
+  // Scale sample prioridad to DB total using alta as anchor
+  const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;
+  const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);
+  const bajaEst  = Math.max(0, total - stats.alta - mediaEst);
+
+  mkDoughnut('ch-g-prio', ['Alta','Media','Baja'], [stats.alta, mediaEst, bajaEst], PRIO_COLORS);
+  mkBar('ch-g-zonas', zonas.slice(0,7).map(z=>z.zona), zonas.slice(0,7).map(z=>z.total),
+        zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+  mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
+        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
+
+  // Activity by hour from sample
+  const hourMap = {};
+  (emergencias||[]).forEach(e => {
+    const h = parseInt(e.hora.slice(11,13),10);
+    hourMap[h] = (hourMap[h]||0)+1;
+  });
+  const hours = Array.from({length:24},(_,i)=>i);
+  mkBar('ch-g-horas',
+    hours.map(h=>h.toString().padStart(2,'0')+':00'),
+    hours.map(h=>hourMap[h]||0),
+    hours.map(()=>'#7c3aed'));
+
+  // Horizontal all zones
+  mkBar('ch-g-horiz',
+    zonas.map(z=>z.zona), zonas.map(z=>z.total),
+    zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
+}
+
+// ── Search ─────────────────────────────────────────────────────
+function populateFilters() {
+  const zSel = document.getElementById('f-zona');
+  const tSel = document.getElementById('f-tipo');
+  while (zSel.options.length > 1) zSel.remove(1);
+  while (tSel.options.length > 1) tSel.remove(1);
+  (data.zonas||[]).forEach(z => { const o=document.createElement('option'); o.value=o.textContent=z.zona; zSel.appendChild(o); });
+  (data.tipos||[]).forEach(t => { const o=document.createElement('option'); o.value=o.textContent=t.tipo; tSel.appendChild(o); });
+}
+
+function buscar() {
+  if (!data) return;
+  const zona = document.getElementById('f-zona').value;
+  const tipo = document.getElementById('f-tipo').value;
+  const prio = document.getElementById('f-prio').value;
+
+  let res = data.emergencias || [];
+  if (zona) res = res.filter(e => e.zona === zona);
+  if (tipo) res = res.filter(e => e.tipo === tipo);
+  if (prio) res = res.filter(e => e.prioridad === prio);
+
+  const n = res.length;
+  document.getElementById('b-count').textContent = n + ' resultado' + (n!==1?'s':'');
+  document.getElementById('b-info').textContent  =
+    `Mostrando ${n} de ${data.emergencias.length} registros más recientes.${n===0?' Prueba con otros filtros.':''}`;
+
+  const tb = document.getElementById('tabla-busqueda');
+  tb.innerHTML = n === 0
+    ? `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🔍</div><p>Sin resultados para los filtros seleccionados.</p></div></td></tr>`
+    : res.map(r => rowHtml(r, false)).join('');
+
+  document.getElementById('b-wrap').style.display = 'block';
+
+  if (n > 0) {
+    const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};
+    res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });
+    const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];
+
+    document.getElementById('b-stats').style.display = 'flex';
+    document.getElementById('b-stats').innerHTML = `
+      <div class="stat-pill"><span class="stat-pill-label">Resultados</span><span class="stat-pill-value" style="color:var(--accent)">${n}</span></div>
+      <div class="stat-pill"><span class="stat-pill-label">Alta</span><span class="stat-pill-value" style="color:var(--alta)">${pCnt.ALTA}</span></div>
+      <div class="stat-pill"><span class="stat-pill-label">Media</span><span class="stat-pill-value" style="color:var(--media)">${pCnt.MEDIA}</span></div>
+      <div class="stat-pill"><span class="stat-pill-label">Baja</span><span class="stat-pill-value" style="color:var(--baja)">${pCnt.BAJA}</span></div>
+      <div class="stat-pill"><span class="stat-pill-label">Zona top</span><span class="stat-pill-value" style="font-size:.9rem">${topZona?topZona[0]:'—'}</span></div>`;
+
+    document.getElementById('b-charts').style.display = 'block';
+    const zEntries = Object.entries(zCnt).sort((a,b)=>b[1]-a[1]);
+    mkBar('ch-b-zonas', zEntries.map(e=>e[0]), zEntries.map(e=>e[1]),
+          zEntries.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+    mkDoughnut('ch-b-prio', ['Alta','Media','Baja'], [pCnt.ALTA,pCnt.MEDIA,pCnt.BAJA], PRIO_COLORS);
+  } else {
+    document.getElementById('b-stats').style.display  = 'none';
+    document.getElementById('b-charts').style.display = 'none';
   }
+}
 
-  function renderStats(stats, zonas, tipos) {
-    const total   = stats.total || 0;
-    const alta    = stats.alta  || 0;
-    const zonaTop = zonas[0] || { zona: "—", total: 0 };
-    const tipoTop = tipos[0] || { tipo: "—", total: 0 };
+function limpiar() {
+  ['f-zona','f-tipo','f-prio'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('b-wrap').style.display   = 'none';
+  document.getElementById('b-stats').style.display  = 'none';
+  document.getElementById('b-charts').style.display = 'none';
+  document.getElementById('b-info').textContent = '';
+}
 
-    document.getElementById("stat-total").textContent      = total;
-    document.getElementById("stat-alta").textContent       = alta;
-    document.getElementById("stat-alta-pct").textContent   = total > 0
-      ? Math.round(alta / total * 100) + "% del total" : "—";
-    document.getElementById("stat-zona").textContent       = zonaTop.zona;
-    document.getElementById("stat-zona-count").textContent = zonaTop.total + " emergencias";
-    document.getElementById("stat-tipo").textContent       = tipoTop.tipo;
-    document.getElementById("stat-tipo-count").textContent = tipoTop.total + " casos";
+// ── Main fetch ─────────────────────────────────────────────────
+async function doRefresh() {
+  const btn = document.getElementById('btn-refresh');
+  btn.classList.add('spinning'); btn.disabled = true;
+  try {
+    const res = await fetch('/api/dashboard');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    data = json;
+
+    renderInicio();
+    renderDatos();
+    populateFilters();
+
+    const active = document.querySelector('.nav-item.active')?.dataset.s;
+    if (active === 'graficas') renderGraficas();
+
+    document.getElementById('last-update').textContent =
+      'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
+  } catch (err) {
+    console.error(err);
+    ['tabla-inicio','tabla-datos'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML =
+        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">Error: ${err.message}</td></tr>`;
+    });
+  } finally {
+    btn.classList.remove('spinning'); btn.disabled = false;
   }
+}
 
-  function renderBars(containerId, data, labelKey) {
-    const container = document.getElementById(containerId);
-    if (!data || data.length === 0) {
-      container.innerHTML = '<p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">Sin datos</p>';
-      return;
-    }
-    const max = data[0].total;
-    container.innerHTML = data.map(d => `
-      <div class="bar-row">
-        <span class="bar-label" title="${d[labelKey]}">${d[labelKey]}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${Math.round(d.total / max * 100)}%"></div>
-        </div>
-        <span class="bar-count">${d.total}</span>
-      </div>
-    `).join("");
-  }
-
-  async function refresh() {
-    const btn = document.getElementById("btn-refresh");
-    btn.classList.add("spinning");
-    btn.disabled = true;
-
-    try {
-      const res = await fetch("/api/dashboard");
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-
-      if (data.error) throw new Error(data.error);
-
-      renderTabla(data.emergencias);
-      renderStats(data.stats, data.zonas, data.tipos);
-      renderBars("chart-zonas", data.zonas, "zona");
-      renderBars("chart-tipos", data.tipos, "tipo");
-
-      document.getElementById("last-update").textContent =
-        "Última actualización: " + new Date().toLocaleTimeString("es-MX");
-
-    } catch (err) {
-      console.error("Error al obtener datos:", err);
-      document.getElementById("tabla-emergencias").innerHTML =
-        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">
-           Error al conectar con la BD: ${err.message}
-         </td></tr>`;
-    } finally {
-      btn.classList.remove("spinning");
-      btn.disabled = false;
-    }
-  }
-
-  // Carga inicial y auto-refresco cada 5 segundos
-  refresh();
-  setInterval(refresh, 5000);
+doRefresh();
+setInterval(doRefresh, 5000);
 </script>
 </body>
 </html>
