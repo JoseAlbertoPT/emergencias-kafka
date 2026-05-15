@@ -39,6 +39,13 @@ cd ~/emergencias-kafka
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 mvn exec:java -Dexec.mainClass="mx.edu.bigdata.EmergenciaProducer"
 ```
+## Terminal 4B — Producer con datos reales 911 CDMX
+```bash
+cd ~/emergencias-kafka
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+mvn exec:java -Dexec.mainClass="mx.edu.bigdata.ProducerCSV"
+```
+Usa el archivo datos_911_cdmx.csv con 390,063 registros reales 
 
 ### Terminal 5 — Servidor Web Dashboard
 ```bash
@@ -82,11 +89,4 @@ SELECT * FROM emergencias WHERE prioridad = 'ALTA' ORDER BY fecha_registro DESC;
 ```
 
 ---
-
-## Terminal 4B — Producer con datos reales 911 CDMX
-```bash
-cd ~/emergencias-kafka
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-mvn exec:java -Dexec.mainClass="mx.edu.bigdata.ProducerCSV"
-```
-Usa el archivo datos_911_cdmx.csv con 390,063 registros reales del 911 CDMX 2022.
+del 911 CDMX 2022.
