@@ -87,6 +87,3 @@ SELECT zona, COUNT(*) as total FROM emergencias GROUP BY zona ORDER BY total DES
 SELECT tipo, COUNT(*) as total FROM emergencias GROUP BY tipo ORDER BY total DESC;
 SELECT * FROM emergencias WHERE prioridad = 'ALTA' ORDER BY fecha_registro DESC;
 ```
-
----
-del 911 CDMX 2022.
