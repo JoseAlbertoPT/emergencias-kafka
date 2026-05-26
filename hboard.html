@@ -1,0 +1,652 @@
+[1mdiff --git a/dashboard.html b/dashboard.html[m
+[1mindex 87b9669..f4fe8e1 100644[m
+[1m--- a/dashboard.html[m
+[1m+++ b/dashboard.html[m
+[36m@@ -45,7 +45,6 @@[m
+     }[m
+     .logo-text h2 { font-size: .8rem; font-weight: 700; color: #fff; letter-spacing: .02em; line-height: 1.3; }[m
+     .logo-text p  { font-size: .67rem; color: var(--sidebar-text); margin-top: 2px; }[m
+[31m-[m
+     .nav-list { list-style: none; padding: 1rem .7rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }[m
+     .nav-item { border-radius: 9px; cursor: pointer; }[m
+     .nav-link {[m
+[36m@@ -57,7 +56,6 @@[m
+     .nav-link:hover { background: var(--sidebar-hover); color: #fff; }[m
+     .nav-item.active .nav-link { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }[m
+     .nav-icon { width: 17px; height: 17px; flex-shrink: 0; }[m
+[31m-[m
+     .sidebar-foot {[m
+       padding: 1rem 1.2rem;[m
+       border-top: 1px solid rgba(255,255,255,.08);[m
+[36m@@ -140,7 +138,6 @@[m
+     .chart-container.sm { height: 200px; }[m
+     .chart-container.md { height: 270px; }[m
+     .chart-container.lg { height: 330px; }[m
+[31m-[m
+     .table-wrap {[m
+       background: var(--surface); border: 1px solid var(--border);[m
+       border-radius: 14px; overflow: hidden; margin-bottom: 1.6rem;[m
+[36m@@ -164,7 +161,6 @@[m
+     }[m
+     td { padding: .82rem 1.2rem; font-size: .84rem; border-top: 1px solid var(--border); }[m
+     tbody tr:hover { background: rgba(38,140,186,.04); }[m
+[31m-[m
+     .badge {[m
+       display: inline-flex; align-items: center; gap: .28rem;[m
+       padding: .2rem .6rem; border-radius: 999px; font-size: .71rem; font-weight: 700;[m
+[36m@@ -211,7 +207,6 @@[m
+       cursor: pointer; transition: border-color .2s, color .2s;[m
+     }[m
+     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }[m
+[31m-[m
+     .stats-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }[m
+     .stat-pill {[m
+       background: var(--surface); border: 1px solid var(--border);[m
+[36m@@ -228,7 +223,6 @@[m
+       text-align: center; padding: 1.1rem; font-size: .7rem;[m
+       color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);[m
+     }[m
+[31m-[m
+     @media (max-width: 768px) {[m
+       .sidebar { display: none; }[m
+       .main-container { margin-left: 0; }[m
+[36m@@ -239,7 +233,6 @@[m
+ </head>[m
+ <body>[m
+ <div class="app-shell">[m
+[31m-[m
+   <!-- SIDEBAR -->[m
+   <nav class="sidebar">[m
+     <div class="sidebar-logo">[m
+[36m@@ -289,7 +282,6 @@[m
+       <div class="live-pill"><span class="live-dot"></span>EN VIVO · Kafka</div>[m
+     </div>[m
+   </nav>[m
+[31m-[m
+   <!--  MAIN -->[m
+   <div class="main-container">[m
+     <header class="topbar">[m
+[36m@@ -349,7 +341,7 @@[m
+               <table>[m
+                 <thead><tr><th>#ID</th><th>Zona</th><th>Tipo</th><th>Prioridad</th><th>Hora</th></tr></thead>[m
+                 <tbody id="tabla-inicio">[m
+[31m-                  <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>[m
+[32m+[m[32m                <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>[m
+                 </tbody>[m
+               </table>[m
+             </div>[m
+[36m@@ -375,13 +367,13 @@[m
+           </div>[m
+           <table>[m
+             <thead>[m
+[31m-              <tr>[m
+[31m-                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>[m
+[31m-                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>[m
+[31m-              </tr>[m
+[32m+[m[32m            <tr>[m
+[32m+[m[32m              <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>[m
+[32m+[m[32m              <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>[m
+[32m+[m[32m            </tr>[m
+             </thead>[m
+             <tbody id="tabla-datos">[m
+[31m-              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>[m
+[32m+[m[32m            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>[m
+             </tbody>[m
+           </table>[m
+         </div>[m
+[36m@@ -476,10 +468,10 @@[m
+           </div>[m
+           <table>[m
+             <thead>[m
+[31m-              <tr>[m
+[31m-                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>[m
+[31m-                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>[m
+[31m-              </tr>[m
+[32m+[m[32m            <tr>[m
+[32m+[m[32m              <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>[m
+[32m+[m[32m              <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>[m
+[32m+[m[32m            </tr>[m
+             </thead>[m
+             <tbody id="tabla-busqueda"></tbody>[m
+           </table>[m
+[36m@@ -505,106 +497,106 @@[m
+ </div>[m
+ [m
+ <script>[m
+[31m-let data = null;[m
+[31m-const CH  = {};[m
+[31m-[m
+[31m-const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];[m
+[31m-const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];[m
+[31m-const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];[m
+[31m-const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };[m
+[31m-document.querySelectorAll('.nav-item').forEach(item => {[m
+[31m-  item.addEventListener('click', () => {[m
+[31m-    const s = item.dataset.s;[m
+[31m-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));[m
+[31m-    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));[m
+[31m-    item.classList.add('active');[m
+[31m-    document.getElementById('sec-' + s).classList.add('active');[m
+[31m-    document.getElementById('page-title').textContent = PAGE_TITLES[s];[m
+[31m-    if (s === 'graficas' && data) renderGraficas();[m
+[32m+[m[32m  let data = null;[m
+[32m+[m[32m  const CH  = {};[m
+[32m+[m
+[32m+[m[32m  const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];[m
+[32m+[m[32m  const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];[m
+[32m+[m[32m  const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];[m
+[32m+[m[32m  const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };[m
+[32m+[m[32m  document.querySelectorAll('.nav-item').forEach(item => {[m
+[32m+[m[32m    item.addEventListener('click', () => {[m
+[32m+[m[32m      const s = item.dataset.s;[m
+[32m+[m[32m      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));[m
+[32m+[m[32m      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));[m
+[32m+[m[32m      item.classList.add('active');[m
+[32m+[m[32m      document.getElementById('sec-' + s).classList.add('active');[m
+[32m+[m[32m      document.getElementById('page-title').textContent = PAGE_TITLES[s];[m
+[32m+[m[32m      if (s === 'graficas' && data) renderGraficas();[m
+[32m+[m[32m    });[m
+   });[m
+[31m-});[m
+[31m-function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }[m
+[31m-function mkBar(id, labels, values, colors, indexAxis='x') {[m
+[31m-  kill(id);[m
+[31m-  CH[id] = new Chart(document.getElementById(id), {[m
+[31m-    type: 'bar',[m
+[31m-    data: {[m
+[31m-      labels,[m
+[31m-      datasets: [{[m
+[31m-        data: values,[m
+[31m-        backgroundColor: colors.map(c => c + 'bb'),[m
+[31m-        borderColor: colors,[m
+[31m-        borderWidth: 1.5,[m
+[31m-        borderRadius: 6,[m
+[31m-      }][m
+[31m-    },[m
+[31m-    options: {[m
+[31m-      indexAxis,[m
+[31m-      responsive: true,[m
+[31m-      maintainAspectRatio: false,[m
+[31m-      plugins: { legend: { display: false } },[m
+[31m-      scales: {[m
+[31m-        [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },[m
+[31m-        [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }[m
+[32m+[m[32m  function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }[m
+[32m+[m[32m  function mkBar(id, labels, values, colors, indexAxis='x') {[m
+[32m+[m[32m    kill(id);[m
+[32m+[m[32m    CH[id] = new Chart(document.getElementById(id), {[m
+[32m+[m[32m      type: 'bar',[m
+[32m+[m[32m      data: {[m
+[32m+[m[32m        labels,[m
+[32m+[m[32m        datasets: [{[m
+[32m+[m[32m          data: values,[m
+[32m+[m[32m          backgroundColor: colors.map(c => c + 'bb'),[m
+[32m+[m[32m          borderColor: colors,[m
+[32m+[m[32m          borderWidth: 1.5,[m
+[32m+[m[32m          borderRadius: 6,[m
+[32m+[m[32m        }][m
+[32m+[m[32m      },[m
+[32m+[m[32m      options: {[m
+[32m+[m[32m        indexAxis,[m
+[32m+[m[32m        responsive: true,[m
+[32m+[m[32m        maintainAspectRatio: false,[m
+[32m+[m[32m        plugins: { legend: { display: false } },[m
+[32m+[m[32m        scales: {[m
+[32m+[m[32m          [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },[m
+[32m+[m[32m          [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }[m
+[32m+[m[32m        }[m
+       }[m
+[31m-    }[m
+[31m-  });[m
+[31m-}[m
+[31m-[m
+[31m-function mkDoughnut(id, labels, values, colors, legendPos='bottom') {[m
+[31m-  kill(id);[m
+[31m-  const total = values.reduce((a,b)=>a+b,0);[m
+[31m-  CH[id] = new Chart(document.getElementById(id), {[m
+[31m-    type: 'doughnut',[m
+[31m-    data: {[m
+[31m-      labels,[m
+[31m-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }][m
+[31m-    },[m
+[31m-    options: {[m
+[31m-      responsive: true,[m
+[31m-      maintainAspectRatio: false,[m
+[31m-      cutout: '65%',[m
+[31m-      plugins: {[m
+[31m-        legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },[m
+[31m-        tooltip: { callbacks: {[m
+[31m-          label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`[m
+[31m-        }}[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function mkDoughnut(id, labels, values, colors, legendPos='bottom') {[m
+[32m+[m[32m    kill(id);[m
+[32m+[m[32m    const total = values.reduce((a,b)=>a+b,0);[m
+[32m+[m[32m    CH[id] = new Chart(document.getElementById(id), {[m
+[32m+[m[32m      type: 'doughnut',[m
+[32m+[m[32m      data: {[m
+[32m+[m[32m        labels,[m
+[32m+[m[32m        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }][m
+[32m+[m[32m      },[m
+[32m+[m[32m      options: {[m
+[32m+[m[32m        responsive: true,[m
+[32m+[m[32m        maintainAspectRatio: false,[m
+[32m+[m[32m        cutout: '65%',[m
+[32m+[m[32m        plugins: {[m
+[32m+[m[32m          legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },[m
+[32m+[m[32m          tooltip: { callbacks: {[m
+[32m+[m[32m              label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`[m
+[32m+[m[32m            }}[m
+[32m+[m[32m        }[m
+       }[m
+[31m-    }[m
+[31m-  });[m
+[31m-}[m
+[31m-[m
+[31m-function mkPie(id, labels, values, colors) {[m
+[31m-  kill(id);[m
+[31m-  CH[id] = new Chart(document.getElementById(id), {[m
+[31m-    type: 'pie',[m
+[31m-    data: {[m
+[31m-      labels,[m
+[31m-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }][m
+[31m-    },[m
+[31m-    options: {[m
+[31m-      responsive: true,[m
+[31m-      maintainAspectRatio: false,[m
+[31m-      plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }[m
+[31m-    }[m
+[31m-  });[m
+[31m-}[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+ [m
+[31m-function badge(p) {[m
+[31m-  const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';[m
+[31m-  return `<span class="badge badge-${cls}">${p}</span>`;[m
+[31m-}[m
+[32m+[m[32m  function mkPie(id, labels, values, colors) {[m
+[32m+[m[32m    kill(id);[m
+[32m+[m[32m    CH[id] = new Chart(document.getElementById(id), {[m
+[32m+[m[32m      type: 'pie',[m
+[32m+[m[32m      data: {[m
+[32m+[m[32m        labels,[m
+[32m+[m[32m        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }][m
+[32m+[m[32m      },[m
+[32m+[m[32m      options: {[m
+[32m+[m[32m        responsive: true,[m
+[32m+[m[32m        maintainAspectRatio: false,[m
+[32m+[m[32m        plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+ [m
+[31m-function rowHtml(r, short) {[m
+[31m-  return short[m
+[31m-    ? `<tr>[m
+[32m+[m[32m  function badge(p) {[m
+[32m+[m[32m    const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';[m
+[32m+[m[32m    return `<span class="badge badge-${cls}">${p}</span>`;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function rowHtml(r, short) {[m
+[32m+[m[32m    return short[m
+[32m+[m[32m            ? `<tr>[m
+         <td class="id-col">${r.id}</td>[m
+         <td><span class="zona-chip">${r.zona}</span></td>[m
+         <td>${r.tipo}</td>[m
+         <td>${badge(r.prioridad)}</td>[m
+         <td style="color:var(--muted);font-size:.76rem">${r.hora.slice(11,16)}</td>[m
+        </tr>`[m
+[31m-    : `<tr>[m
+[32m+[m[32m            : `<tr>[m
+         <td class="id-col">${r.id}</td>[m
+         <td>${r.hora}</td>[m
+         <td><span class="zona-chip">${r.zona}</span></td>[m
+[36m@@ -612,180 +604,179 @@[m [mfunction rowHtml(r, short) {[m
+         <td>${badge(r.prioridad)}</td>[m
+         <td style="color:var(--muted);font-size:.76rem">${r.fecha_registro}</td>[m
+        </tr>`;[m
+[31m-}[m
+[31m-[m
+[31m-function renderInicio() {[m
+[31m-  const { stats, zonas, tipos, emergencias } = data;[m
+[31m-  const total = stats.total || 0;[m
+[31m-  const alta  = stats.alta  || 0;[m
+[31m-  const zonaTop = zonas[0] || { zona: '—', total: 0 };[m
+[31m-  const tipoTop = tipos[0] || { tipo: '—', total: 0 };[m
+[31m-[m
+[31m-  document.getElementById('kpi-total').textContent    = total;[m
+[31m-  document.getElementById('kpi-alta').textContent     = alta;[m
+[31m-  document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';[m
+[31m-  document.getElementById('kpi-zona').textContent     = zonaTop.zona;[m
+[31m-  document.getElementById('kpi-zona-n').textContent   = zonaTop.total + ' emergencias';[m
+[31m-  document.getElementById('kpi-tipo').textContent     = tipoTop.tipo;[m
+[31m-  document.getElementById('kpi-tipo-n').textContent   = tipoTop.total + ' casos';[m
+[31m-[m
+[31m-  const tb = document.getElementById('tabla-inicio');[m
+[31m-  tb.innerHTML = emergencias && emergencias.length[m
+[31m-    ? emergencias.slice(0,5).map(r => rowHtml(r, true)).join('')[m
+[31m-    : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Sin datos</td></tr>';[m
+[31m-[m
+[31m-  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };[m
+[31m-  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);[m
+[31m-  mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);[m
+[31m-}[m
+[31m-[m
+[31m-function renderDatos() {[m
+[31m-  const { emergencias, zonas, tipos } = data;[m
+[31m-  document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';[m
+[31m-[m
+[31m-  const tb = document.getElementById('tabla-datos');[m
+[31m-  tb.innerHTML = emergencias && emergencias.length[m
+[31m-    ? emergencias.map(r => rowHtml(r, false)).join('')[m
+[31m-    : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias</td></tr>';[m
+[31m-[m
+[31m-  mkBar('ch-datos-zonas', zonas.map(z=>z.zona), zonas.map(z=>z.total),[m
+[31m-        zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[31m-  mkPie('ch-datos-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),[m
+[31m-        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));[m
+[31m-}[m
+[31m-[m
+[31m-//Render Gráficas[m
+[31m-function renderGraficas() {[m
+[31m-  const { emergencias, zonas, tipos, stats } = data;[m
+[31m-  const total = stats.total || 0;[m
+[31m-[m
+[31m-  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };[m
+[31m-  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);[m
+[31m-[m
+[31m-  // Scale sample prioridad to DB total using alta as anchor[m
+[31m-  const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;[m
+[31m-  const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);[m
+[31m-  const bajaEst  = Math.max(0, total - stats.alta - mediaEst);[m
+[31m-[m
+[31m-  mkDoughnut('ch-g-prio', ['Alta','Media','Baja'], [stats.alta, mediaEst, bajaEst], PRIO_COLORS);[m
+[31m-  mkBar('ch-g-zonas', zonas.slice(0,7).map(z=>z.zona), zonas.slice(0,7).map(z=>z.total),[m
+[31m-        zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[31m-  mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),[m
+[31m-        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));[m
+[31m-[m
+[31m-  // Activity by hour from sample[m
+[31m-  const hourMap = {};[m
+[31m-  (emergencias||[]).forEach(e => {[m
+[31m-    const h = parseInt(e.hora.slice(11,13),10);[m
+[31m-    hourMap[h] = (hourMap[h]||0)+1;[m
+[31m-  });[m
+[31m-  const hours = Array.from({length:24},(_,i)=>i);[m
+[31m-  mkBar('ch-g-horas',[m
+[31m-    hours.map(h=>h.toString().padStart(2,'0')+':00'),[m
+[31m-    hours.map(h=>hourMap[h]||0),[m
+[31m-    hours.map(()=>'#7c3aed'));[m
+[31m-[m
+[31m-  // Horizontal all zones[m
+[31m-  mkBar('ch-g-horiz',[m
+[31m-    zonas.map(z=>z.zona), zonas.map(z=>z.total),[m
+[31m-    zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-function populateFilters() {[m
+[31m-  const zSel = document.getElementById('f-zona');[m
+[31m-  const tSel = document.getElementById('f-tipo');[m
+[31m-  while (zSel.options.length > 1) zSel.remove(1);[m
+[31m-  while (tSel.options.length > 1) tSel.remove(1);[m
+[31m-  (data.zonas||[]).forEach(z => { const o=document.createElement('option'); o.value=o.textContent=z.zona; zSel.appendChild(o); });[m
+[31m-  (data.tipos||[]).forEach(t => { const o=document.createElement('option'); o.value=o.textContent=t.tipo; tSel.appendChild(o); });[m
+[31m-}[m
+[31m-[m
+[31m-function buscar() {[m
+[31m-  if (!data) return;[m
+[31m-  const zona = document.getElementById('f-zona').value;[m
+[31m-  const tipo = document.getElementById('f-tipo').value;[m
+[31m-  const prio = document.getElementById('f-prio').value;[m
+[31m-[m
+[31m-  let res = data.emergencias || [];[m
+[31m-  if (zona) res = res.filter(e => e.zona === zona);[m
+[31m-  if (tipo) res = res.filter(e => e.tipo === tipo);[m
+[31m-  if (prio) res = res.filter(e => e.prioridad === prio);[m
+[31m-[m
+[31m-  const n = res.length;[m
+[31m-  document.getElementById('b-count').textContent = n + ' resultado' + (n!==1?'s':'');[m
+[31m-  document.getElementById('b-info').textContent  =[m
+[31m-    `Mostrando ${n} de ${data.emergencias.length} registros más recientes.${n===0?' Prueba con otros filtros.':''}`;[m
+[31m-[m
+[31m-  const tb = document.getElementById('tabla-busqueda');[m
+[31m-  tb.innerHTML = n === 0[m
+[31m-    ? `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🔍</div><p>Sin resultados para los filtros seleccionados.</p></div></td></tr>`[m
+[31m-    : res.map(r => rowHtml(r, false)).join('');[m
+[31m-[m
+[31m-  document.getElementById('b-wrap').style.display = 'block';[m
+[31m-[m
+[31m-  if (n > 0) {[m
+[31m-    const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};[m
+[31m-    res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });[m
+[31m-    const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];[m
+[31m-[m
+[31m-    document.getElementById('b-stats').style.display = 'flex';[m
+[31m-    document.getElementById('b-stats').innerHTML = `[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function renderInicio() {[m
+[32m+[m[32m    const { stats, zonas, tipos, emergencias } = data;[m
+[32m+[m[32m    const total = stats.total || 0;[m
+[32m+[m[32m    const alta  = stats.alta  || 0;[m
+[32m+[m[32m    const zonaTop = zonas[0] || { zona: '—', total: 0 };[m
+[32m+[m[32m    const tipoTop = tipos[0] || { tipo: '—', total: 0 };[m
+[32m+[m
+[32m+[m[32m    document.getElementById('kpi-total').textContent    = total;[m
+[32m+[m[32m    document.getElementById('kpi-alta').textContent     = alta;[m
+[32m+[m[32m    document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';[m
+[32m+[m[32m    document.getElementById('kpi-zona').textContent     = zonaTop.zona;[m
+[32m+[m[32m    document.getElementById('kpi-zona-n').textContent   = zonaTop.total + ' emergencias';[m
+[32m+[m[32m    document.getElementById('kpi-tipo').textContent     = tipoTop.tipo;[m
+[32m+[m[32m    document.getElementById('kpi-tipo-n').textContent   = tipoTop.total + ' casos';[m
+[32m+[m
+[32m+[m[32m    const tb = document.getElementById('tabla-inicio');[m
+[32m+[m[32m    tb.innerHTML = emergencias && emergencias.length[m
+[32m+[m[32m            ? emergencias.slice(0,5).map(r => rowHtml(r, true)).join('')[m
+[32m+[m[32m            : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Sin datos</td></tr>';[m
+[32m+[m
+[32m+[m[32m    const cnt = { ALTA:0, MEDIA:0, BAJA:0 };[m
+[32m+[m[32m    (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);[m
+[32m+[m[32m    mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function renderDatos() {[m
+[32m+[m[32m    const { emergencias, zonas, tipos } = data;[m
+[32m+[m[32m    document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';[m
+[32m+[m
+[32m+[m[32m    const tb = document.getElementById('tabla-datos');[m
+[32m+[m[32m    tb.innerHTML = emergencias && emergencias.length[m
+[32m+[m[32m            ? emergencias.map(r => rowHtml(r, false)).join('')[m
+[32m+[m[32m            : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias</td></tr>';[m
+[32m+[m
+[32m+[m[32m    mkBar('ch-datos-zonas', zonas.map(z=>z.zona), zonas.map(z=>z.total),[m
+[32m+[m[32m            zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[32m+[m[32m    mkPie('ch-datos-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),[m
+[32m+[m[32m            tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  //Render Gráficas[m
+[32m+[m[32m  function renderGraficas() {[m
+[32m+[m[32m    const { emergencias, zonas, tipos, stats } = data;[m
+[32m+[m[32m    const total = stats.total || 0;[m
+[32m+[m
+[32m+[m[32m    const cnt = { ALTA:0, MEDIA:0, BAJA:0 };[m
+[32m+[m[32m    (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);[m
+[32m+[m
+[32m+[m[32m    // Scale sample prioridad to DB total using alta as anchor[m
+[32m+[m[32m    const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;[m
+[32m+[m[32m    const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);[m
+[32m+[m[32m    const bajaEst  = Math.max(0, total - stats.alta - mediaEst);[m
+[32m+[m
+[32m+[m[32m    mkDoughnut('ch-g-prio', ['Alta','Media','Baja'], [stats.alta, mediaEst, bajaEst], PRIO_COLORS);[m
+[32m+[m[32m    mkBar('ch-g-zonas', zonas.slice(0,7).map(z=>z.zona), zonas.slice(0,7).map(z=>z.total),[m
+[32m+[m[32m            zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[32m+[m[32m    mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),[m
+[32m+[m[32m            tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));[m
+[32m+[m
+[32m+[m[32m    // Activity by hour from sample[m
+[32m+[m[32m    const hourMap = {};[m
+[32m+[m[32m    (emergencias||[]).forEach(e => {[m
+[32m+[m[32m      const h = parseInt(e.hora.slice(11,13),10);[m
+[32m+[m[32m      hourMap[h] = (hourMap[h]||0)+1;[m
+[32m+[m[32m    });[m
+[32m+[m[32m    const hours = Array.from({length:24},(_,i)=>i);[m
+[32m+[m[32m    mkBar('ch-g-horas',[m
+[32m+[m[32m            hours.map(h=>h.toString().padStart(2,'0')+':00'),[m
+[32m+[m[32m            hours.map(h=>hourMap[h]||0),[m
+[32m+[m[32m            hours.map(()=>'#7c3aed'));[m
+[32m+[m
+[32m+[m[32m    // Horizontal all zones[m
+[32m+[m[32m    mkBar('ch-g-horiz',[m
+[32m+[m[32m            zonas.map(z=>z.zona), zonas.map(z=>z.total),[m
+[32m+[m[32m            zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m
+[32m+[m[32m  function populateFilters() {[m
+[32m+[m[32m    const zSel = document.getElementById('f-zona');[m
+[32m+[m[32m    const tSel = document.getElementById('f-tipo');[m
+[32m+[m[32m    if (zSel.options.length > 1) return;[m
+[32m+[m[32m    (data.zonas||[]).forEach(z => { const o=document.createElement('option'); o.value=o.textContent=z.zona; zSel.appendChild(o); });[m
+[32m+[m[32m    (data.tipos||[]).forEach(t => { const o=document.createElement('option'); o.value=o.textContent=t.tipo; tSel.appendChild(o); });[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function buscar() {[m
+[32m+[m[32m    if (!data) return;[m
+[32m+[m[32m    const zona = document.getElementById('f-zona').value;[m
+[32m+[m[32m    const tipo = document.getElementById('f-tipo').value;[m
+[32m+[m[32m    const prio = document.getElementById('f-prio').value;[m
+[32m+[m
+[32m+[m[32m    let res = data.emergencias || [];[m
+[32m+[m[32m    if (zona) res = res.filter(e => e.zona === zona);[m
+[32m+[m[32m    if (tipo) res = res.filter(e => e.tipo === tipo);[m
+[32m+[m[32m    if (prio) res = res.filter(e => e.prioridad === prio);[m
+[32m+[m
+[32m+[m[32m    const n = res.length;[m
+[32m+[m[32m    document.getElementById('b-count').textContent = n + ' resultado' + (n!==1?'s':'');[m
+[32m+[m[32m    document.getElementById('b-info').textContent  =[m
+[32m+[m[32m            `Mostrando ${n} de ${data.emergencias.length} registros más recientes.${n===0?' Prueba con otros filtros.':''}`;[m
+[32m+[m
+[32m+[m[32m    const tb = document.getElementById('tabla-busqueda');[m
+[32m+[m[32m    tb.innerHTML = n === 0[m
+[32m+[m[32m            ? `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🔍</div><p>Sin resultados para los filtros seleccionados.</p></div></td></tr>`[m
+[32m+[m[32m            : res.map(r => rowHtml(r, false)).join('');[m
+[32m+[m
+[32m+[m[32m    document.getElementById('b-wrap').style.display = 'block';[m
+[32m+[m
+[32m+[m[32m    if (n > 0) {[m
+[32m+[m[32m      const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};[m
+[32m+[m[32m      res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });[m
+[32m+[m[32m      const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];[m
+[32m+[m
+[32m+[m[32m      document.getElementById('b-stats').style.display = 'flex';[m
+[32m+[m[32m      document.getElementById('b-stats').innerHTML = `[m
+       <div class="stat-pill"><span class="stat-pill-label">Resultados</span><span class="stat-pill-value" style="color:var(--accent)">${n}</span></div>[m
+       <div class="stat-pill"><span class="stat-pill-label">Alta</span><span class="stat-pill-value" style="color:var(--alta)">${pCnt.ALTA}</span></div>[m
+       <div class="stat-pill"><span class="stat-pill-label">Media</span><span class="stat-pill-value" style="color:var(--media)">${pCnt.MEDIA}</span></div>[m
+       <div class="stat-pill"><span class="stat-pill-label">Baja</span><span class="stat-pill-value" style="color:var(--baja)">${pCnt.BAJA}</span></div>[m
+       <div class="stat-pill"><span class="stat-pill-label">Zona top</span><span class="stat-pill-value" style="font-size:.9rem">${topZona?topZona[0]:'—'}</span></div>`;[m
+ [m
+[31m-    document.getElementById('b-charts').style.display = 'block';[m
+[31m-    const zEntries = Object.entries(zCnt).sort((a,b)=>b[1]-a[1]);[m
+[31m-    mkBar('ch-b-zonas', zEntries.map(e=>e[0]), zEntries.map(e=>e[1]),[m
+[31m-          zEntries.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[31m-    mkDoughnut('ch-b-prio', ['Alta','Media','Baja'], [pCnt.ALTA,pCnt.MEDIA,pCnt.BAJA], PRIO_COLORS);[m
+[31m-  } else {[m
+[32m+[m[32m      document.getElementById('b-charts').style.display = 'block';[m
+[32m+[m[32m      const zEntries = Object.entries(zCnt).sort((a,b)=>b[1]-a[1]);[m
+[32m+[m[32m      mkBar('ch-b-zonas', zEntries.map(e=>e[0]), zEntries.map(e=>e[1]),[m
+[32m+[m[32m              zEntries.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));[m
+[32m+[m[32m      mkDoughnut('ch-b-prio', ['Alta','Media','Baja'], [pCnt.ALTA,pCnt.MEDIA,pCnt.BAJA], PRIO_COLORS);[m
+[32m+[m[32m    } else {[m
+[32m+[m[32m      document.getElementById('b-stats').style.display  = 'none';[m
+[32m+[m[32m      document.getElementById('b-charts').style.display = 'none';[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  function limpiar() {[m
+[32m+[m[32m    ['f-zona','f-tipo','f-prio'].forEach(id => document.getElementById(id).value = '');[m
+[32m+[m[32m    document.getElementById('b-wrap').style.display   = 'none';[m
+     document.getElementById('b-stats').style.display  = 'none';[m
+     document.getElementById('b-charts').style.display = 'none';[m
+[32m+[m[32m    document.getElementById('b-info').textContent = '';[m
+   }[m
+[31m-}[m
+[31m-[m
+[31m-function limpiar() {[m
+[31m-  ['f-zona','f-tipo','f-prio'].forEach(id => document.getElementById(id).value = '');[m
+[31m-  document.getElementById('b-wrap').style.display   = 'none';[m
+[31m-  document.getElementById('b-stats').style.display  = 'none';[m
+[31m-  document.getElementById('b-charts').style.display = 'none';[m
+[31m-  document.getElementById('b-info').textContent = '';[m
+[31m-}[m
+[31m-[m
+[31m-async function doRefresh() {[m
+[31m-  const btn = document.getElementById('btn-refresh');[m
+[31m-  btn.classList.add('spinning'); btn.disabled = true;[m
+[31m-  try {[m
+[31m-    const res = await fetch('/api/dashboard');[m
+[31m-    if (!res.ok) throw new Error('HTTP ' + res.status);[m
+[31m-    const json = await res.json();[m
+[31m-    if (json.error) throw new Error(json.error);[m
+[31m-    data = json;[m
+[31m-    renderInicio();[m
+[31m-    renderDatos();[m
+[31m-    populateFilters();[m
+[31m-    const active = document.querySelector('.nav-item.active')?.dataset.s;[m
+[31m-    if (active === 'graficas') renderGraficas();[m
+[31m-    document.getElementById('last-update').textContent =[m
+[31m-      'Última actualización: ' + new Date().toLocaleTimeString('es-MX');[m
+[31m-  } catch (err) {[m
+[31m-    console.error(err);[m
+[31m-    ['tabla-inicio','tabla-datos'].forEach(id => {[m
+[31m-      const el = document.getElementById(id);[m
+[31m-      if (el) el.innerHTML =[m
+[31m-        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">Error: ${err.message}</td></tr>`;[m
+[31m-    });[m
+[31m-  } finally {[m
+[31m-    btn.classList.remove('spinning'); btn.disabled = false;[m
+[32m+[m
+[32m+[m[32m  async function doRefresh() {[m
+[32m+[m[32m    const btn = document.getElementById('btn-refresh');[m
+[32m+[m[32m    btn.classList.add('spinning'); btn.disabled = true;[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      const res = await fetch('/api/dashboard');[m
+[32m+[m[32m      if (!res.ok) throw new Error('HTTP ' + res.status);[m
+[32m+[m[32m      const json = await res.json();[m
+[32m+[m[32m      if (json.error) throw new Error(json.error);[m
+[32m+[m[32m      data = json;[m
+[32m+[m[32m      renderInicio();[m
+[32m+[m[32m      renderDatos();[m
+[32m+[m[32m      populateFilters();[m
+[32m+[m[32m      const active = document.querySelector('.nav-item.active')?.dataset.s;[m
+[32m+[m[32m      if (active === 'graficas') renderGraficas();[m
+[32m+[m[32m      document.getElementById('last-update').textContent =[m
+[32m+[m[32m              'Última actualización: ' + new Date().toLocaleTimeString('es-MX');[m
+[32m+[m[32m    } catch (err) {[m
+[32m+[m[32m      console.error(err);[m
+[32m+[m[32m      ['tabla-inicio','tabla-datos'].forEach(id => {[m
+[32m+[m[32m        const el = document.getElementById(id);[m
+[32m+[m[32m        if (el) el.innerHTML =[m
+[32m+[m[32m                `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">Error: ${err.message}</td></tr>`;[m
+[32m+[m[32m      });[m
+[32m+[m[32m    } finally {[m
+[32m+[m[32m      btn.classList.remove('spinning'); btn.disabled = false;[m
+[32m+[m[32m    }[m
+   }[m
+[31m-}[m
+ [m
+[31m-doRefresh();[m
+[31m-setInterval(doRefresh, 5000);[m
+[32m+[m[32m  doRefresh();[m
+[32m+[m[32m  setInterval(doRefresh, 5000);[m
+ </script>[m
+ </body>[m
+[31m-</html>[m
+[32m+[m[32m</html>[m
+\ No newline at end of file[m
