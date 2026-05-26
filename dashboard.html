@@ -45,7 +45,6 @@
     }
     .logo-text h2 { font-size: .8rem; font-weight: 700; color: #fff; letter-spacing: .02em; line-height: 1.3; }
     .logo-text p  { font-size: .67rem; color: var(--sidebar-text); margin-top: 2px; }
-
     .nav-list { list-style: none; padding: 1rem .7rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
     .nav-item { border-radius: 9px; cursor: pointer; }
     .nav-link {
@@ -57,7 +56,6 @@
     .nav-link:hover { background: var(--sidebar-hover); color: #fff; }
     .nav-item.active .nav-link { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }
     .nav-icon { width: 17px; height: 17px; flex-shrink: 0; }
-
     .sidebar-foot {
       padding: 1rem 1.2rem;
       border-top: 1px solid rgba(255,255,255,.08);
@@ -140,7 +138,6 @@
     .chart-container.sm { height: 200px; }
     .chart-container.md { height: 270px; }
     .chart-container.lg { height: 330px; }
-
     .table-wrap {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; overflow: hidden; margin-bottom: 1.6rem;
@@ -164,7 +161,6 @@
     }
     td { padding: .82rem 1.2rem; font-size: .84rem; border-top: 1px solid var(--border); }
     tbody tr:hover { background: rgba(38,140,186,.04); }
-
     .badge {
       display: inline-flex; align-items: center; gap: .28rem;
       padding: .2rem .6rem; border-radius: 999px; font-size: .71rem; font-weight: 700;
@@ -211,7 +207,6 @@
       cursor: pointer; transition: border-color .2s, color .2s;
     }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
     .stats-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
     .stat-pill {
       background: var(--surface); border: 1px solid var(--border);
@@ -228,7 +223,6 @@
       text-align: center; padding: 1.1rem; font-size: .7rem;
       color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);
     }
-
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .main-container { margin-left: 0; }
@@ -239,7 +233,6 @@
 </head>
 <body>
 <div class="app-shell">
-
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-logo">
@@ -289,7 +282,6 @@
       <div class="live-pill"><span class="live-dot"></span>EN VIVO · Kafka</div>
     </div>
   </nav>
-
   <!--  MAIN -->
   <div class="main-container">
     <header class="topbar">
@@ -349,7 +341,7 @@
               <table>
                 <thead><tr><th>#ID</th><th>Zona</th><th>Tipo</th><th>Prioridad</th><th>Hora</th></tr></thead>
                 <tbody id="tabla-inicio">
-                  <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
+                <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
                 </tbody>
               </table>
             </div>
@@ -375,13 +367,13 @@
           </div>
           <table>
             <thead>
-              <tr>
-                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
-                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
-              </tr>
+            <tr>
+              <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
+              <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
+            </tr>
             </thead>
             <tbody id="tabla-datos">
-              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -476,10 +468,10 @@
           </div>
           <table>
             <thead>
-              <tr>
-                <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
-                <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
-              </tr>
+            <tr>
+              <th>#&nbsp;ID</th><th>Hora del evento</th><th>Zona</th>
+              <th>Tipo de emergencia</th><th>Prioridad</th><th>Fecha de registro</th>
+            </tr>
             </thead>
             <tbody id="tabla-busqueda"></tbody>
           </table>
@@ -505,106 +497,106 @@
 </div>
 
 <script>
-let data = null;
-const CH  = {};
+  let data = null;
+  const CH  = {};
 
-const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
-const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
-const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
-const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const s = item.dataset.s;
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById('sec-' + s).classList.add('active');
-    document.getElementById('page-title').textContent = PAGE_TITLES[s];
-    if (s === 'graficas' && data) renderGraficas();
+  const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
+  const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
+  const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
+  const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const s = item.dataset.s;
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('sec-' + s).classList.add('active');
+      document.getElementById('page-title').textContent = PAGE_TITLES[s];
+      if (s === 'graficas' && data) renderGraficas();
+    });
   });
-});
-function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
-function mkBar(id, labels, values, colors, indexAxis='x') {
-  kill(id);
-  CH[id] = new Chart(document.getElementById(id), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: colors.map(c => c + 'bb'),
-        borderColor: colors,
-        borderWidth: 1.5,
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      indexAxis,
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-        [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }
+  function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
+  function mkBar(id, labels, values, colors, indexAxis='x') {
+    kill(id);
+    CH[id] = new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors.map(c => c + 'bb'),
+          borderColor: colors,
+          borderWidth: 1.5,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        indexAxis,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+          [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
       }
-    }
-  });
-}
+    });
+  }
 
-function mkDoughnut(id, labels, values, colors, legendPos='bottom') {
-  kill(id);
-  const total = values.reduce((a,b)=>a+b,0);
-  CH[id] = new Chart(document.getElementById(id), {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },
-        tooltip: { callbacks: {
-          label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`
-        }}
+  function mkDoughnut(id, labels, values, colors, legendPos='bottom') {
+    kill(id);
+    const total = values.reduce((a,b)=>a+b,0);
+    CH[id] = new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },
+          tooltip: { callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`
+            }}
+        }
       }
-    }
-  });
-}
+    });
+  }
 
-function mkPie(id, labels, values, colors) {
-  kill(id);
-  CH[id] = new Chart(document.getElementById(id), {
-    type: 'pie',
-    data: {
-      labels,
-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }
-    }
-  });
-}
+  function mkPie(id, labels, values, colors) {
+    kill(id);
+    CH[id] = new Chart(document.getElementById(id), {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }
+      }
+    });
+  }
 
-function badge(p) {
-  const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';
-  return `<span class="badge badge-${cls}">${p}</span>`;
-}
+  function badge(p) {
+    const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';
+    return `<span class="badge badge-${cls}">${p}</span>`;
+  }
 
-function rowHtml(r, short) {
-  return short
-    ? `<tr>
+  function rowHtml(r, short) {
+    return short
+            ? `<tr>
         <td class="id-col">${r.id}</td>
         <td><span class="zona-chip">${r.zona}</span></td>
         <td>${r.tipo}</td>
         <td>${badge(r.prioridad)}</td>
         <td style="color:var(--muted);font-size:.76rem">${r.hora.slice(11,16)}</td>
        </tr>`
-    : `<tr>
+            : `<tr>
         <td class="id-col">${r.id}</td>
         <td>${r.hora}</td>
         <td><span class="zona-chip">${r.zona}</span></td>
@@ -612,180 +604,179 @@ function rowHtml(r, short) {
         <td>${badge(r.prioridad)}</td>
         <td style="color:var(--muted);font-size:.76rem">${r.fecha_registro}</td>
        </tr>`;
-}
+  }
 
-function renderInicio() {
-  const { stats, zonas, tipos, emergencias } = data;
-  const total = stats.total || 0;
-  const alta  = stats.alta  || 0;
-  const zonaTop = zonas[0] || { zona: '—', total: 0 };
-  const tipoTop = tipos[0] || { tipo: '—', total: 0 };
+  function renderInicio() {
+    const { stats, zonas, tipos, emergencias } = data;
+    const total = stats.total || 0;
+    const alta  = stats.alta  || 0;
+    const zonaTop = zonas[0] || { zona: '—', total: 0 };
+    const tipoTop = tipos[0] || { tipo: '—', total: 0 };
 
-  document.getElementById('kpi-total').textContent    = total;
-  document.getElementById('kpi-alta').textContent     = alta;
-  document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';
-  document.getElementById('kpi-zona').textContent     = zonaTop.zona;
-  document.getElementById('kpi-zona-n').textContent   = zonaTop.total + ' emergencias';
-  document.getElementById('kpi-tipo').textContent     = tipoTop.tipo;
-  document.getElementById('kpi-tipo-n').textContent   = tipoTop.total + ' casos';
+    document.getElementById('kpi-total').textContent    = total;
+    document.getElementById('kpi-alta').textContent     = alta;
+    document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';
+    document.getElementById('kpi-zona').textContent     = zonaTop.zona;
+    document.getElementById('kpi-zona-n').textContent   = zonaTop.total + ' emergencias';
+    document.getElementById('kpi-tipo').textContent     = tipoTop.tipo;
+    document.getElementById('kpi-tipo-n').textContent   = tipoTop.total + ' casos';
 
-  const tb = document.getElementById('tabla-inicio');
-  tb.innerHTML = emergencias && emergencias.length
-    ? emergencias.slice(0,5).map(r => rowHtml(r, true)).join('')
-    : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Sin datos</td></tr>';
+    const tb = document.getElementById('tabla-inicio');
+    tb.innerHTML = emergencias && emergencias.length
+            ? emergencias.slice(0,5).map(r => rowHtml(r, true)).join('')
+            : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Sin datos</td></tr>';
 
-  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
-  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
-  mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);
-}
+    const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
+    (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
+    mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);
+  }
 
-function renderDatos() {
-  const { emergencias, zonas, tipos } = data;
-  document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';
+  function renderDatos() {
+    const { emergencias, zonas, tipos } = data;
+    document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';
 
-  const tb = document.getElementById('tabla-datos');
-  tb.innerHTML = emergencias && emergencias.length
-    ? emergencias.map(r => rowHtml(r, false)).join('')
-    : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias</td></tr>';
+    const tb = document.getElementById('tabla-datos');
+    tb.innerHTML = emergencias && emergencias.length
+            ? emergencias.map(r => rowHtml(r, false)).join('')
+            : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Sin emergencias</td></tr>';
 
-  mkBar('ch-datos-zonas', zonas.map(z=>z.zona), zonas.map(z=>z.total),
-        zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
-  mkPie('ch-datos-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
-        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
-}
+    mkBar('ch-datos-zonas', zonas.map(z=>z.zona), zonas.map(z=>z.total),
+            zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+    mkPie('ch-datos-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
+            tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
+  }
 
-//Render Gráficas
-function renderGraficas() {
-  const { emergencias, zonas, tipos, stats } = data;
-  const total = stats.total || 0;
+  //Render Gráficas
+  function renderGraficas() {
+    const { emergencias, zonas, tipos, stats } = data;
+    const total = stats.total || 0;
 
-  const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
-  (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
+    const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
+    (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
 
-  // Scale sample prioridad to DB total using alta as anchor
-  const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;
-  const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);
-  const bajaEst  = Math.max(0, total - stats.alta - mediaEst);
+    // Scale sample prioridad to DB total using alta as anchor
+    const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;
+    const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);
+    const bajaEst  = Math.max(0, total - stats.alta - mediaEst);
 
-  mkDoughnut('ch-g-prio', ['Alta','Media','Baja'], [stats.alta, mediaEst, bajaEst], PRIO_COLORS);
-  mkBar('ch-g-zonas', zonas.slice(0,7).map(z=>z.zona), zonas.slice(0,7).map(z=>z.total),
-        zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
-  mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
-        tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
+    mkDoughnut('ch-g-prio', ['Alta','Media','Baja'], [stats.alta, mediaEst, bajaEst], PRIO_COLORS);
+    mkBar('ch-g-zonas', zonas.slice(0,7).map(z=>z.zona), zonas.slice(0,7).map(z=>z.total),
+            zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+    mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
+            tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
 
-  // Activity by hour from sample
-  const hourMap = {};
-  (emergencias||[]).forEach(e => {
-    const h = parseInt(e.hora.slice(11,13),10);
-    hourMap[h] = (hourMap[h]||0)+1;
-  });
-  const hours = Array.from({length:24},(_,i)=>i);
-  mkBar('ch-g-horas',
-    hours.map(h=>h.toString().padStart(2,'0')+':00'),
-    hours.map(h=>hourMap[h]||0),
-    hours.map(()=>'#7c3aed'));
+    // Activity by hour from sample
+    const hourMap = {};
+    (emergencias||[]).forEach(e => {
+      const h = parseInt(e.hora.slice(11,13),10);
+      hourMap[h] = (hourMap[h]||0)+1;
+    });
+    const hours = Array.from({length:24},(_,i)=>i);
+    mkBar('ch-g-horas',
+            hours.map(h=>h.toString().padStart(2,'0')+':00'),
+            hours.map(h=>hourMap[h]||0),
+            hours.map(()=>'#7c3aed'));
 
-  // Horizontal all zones
-  mkBar('ch-g-horiz',
-    zonas.map(z=>z.zona), zonas.map(z=>z.total),
-    zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
-}
+    // Horizontal all zones
+    mkBar('ch-g-horiz',
+            zonas.map(z=>z.zona), zonas.map(z=>z.total),
+            zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
+  }
 
 
-function populateFilters() {
-  const zSel = document.getElementById('f-zona');
-  const tSel = document.getElementById('f-tipo');
-  while (zSel.options.length > 1) zSel.remove(1);
-  while (tSel.options.length > 1) tSel.remove(1);
-  (data.zonas||[]).forEach(z => { const o=document.createElement('option'); o.value=o.textContent=z.zona; zSel.appendChild(o); });
-  (data.tipos||[]).forEach(t => { const o=document.createElement('option'); o.value=o.textContent=t.tipo; tSel.appendChild(o); });
-}
+  function populateFilters() {
+    const zSel = document.getElementById('f-zona');
+    const tSel = document.getElementById('f-tipo');
+    if (zSel.options.length > 1) return;
+    (data.zonas||[]).forEach(z => { const o=document.createElement('option'); o.value=o.textContent=z.zona; zSel.appendChild(o); });
+    (data.tipos||[]).forEach(t => { const o=document.createElement('option'); o.value=o.textContent=t.tipo; tSel.appendChild(o); });
+  }
 
-function buscar() {
-  if (!data) return;
-  const zona = document.getElementById('f-zona').value;
-  const tipo = document.getElementById('f-tipo').value;
-  const prio = document.getElementById('f-prio').value;
+  function buscar() {
+    if (!data) return;
+    const zona = document.getElementById('f-zona').value;
+    const tipo = document.getElementById('f-tipo').value;
+    const prio = document.getElementById('f-prio').value;
 
-  let res = data.emergencias || [];
-  if (zona) res = res.filter(e => e.zona === zona);
-  if (tipo) res = res.filter(e => e.tipo === tipo);
-  if (prio) res = res.filter(e => e.prioridad === prio);
+    let res = data.emergencias || [];
+    if (zona) res = res.filter(e => e.zona === zona);
+    if (tipo) res = res.filter(e => e.tipo === tipo);
+    if (prio) res = res.filter(e => e.prioridad === prio);
 
-  const n = res.length;
-  document.getElementById('b-count').textContent = n + ' resultado' + (n!==1?'s':'');
-  document.getElementById('b-info').textContent  =
-    `Mostrando ${n} de ${data.emergencias.length} registros más recientes.${n===0?' Prueba con otros filtros.':''}`;
+    const n = res.length;
+    document.getElementById('b-count').textContent = n + ' resultado' + (n!==1?'s':'');
+    document.getElementById('b-info').textContent  =
+            `Mostrando ${n} de ${data.emergencias.length} registros más recientes.${n===0?' Prueba con otros filtros.':''}`;
 
-  const tb = document.getElementById('tabla-busqueda');
-  tb.innerHTML = n === 0
-    ? `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🔍</div><p>Sin resultados para los filtros seleccionados.</p></div></td></tr>`
-    : res.map(r => rowHtml(r, false)).join('');
+    const tb = document.getElementById('tabla-busqueda');
+    tb.innerHTML = n === 0
+            ? `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🔍</div><p>Sin resultados para los filtros seleccionados.</p></div></td></tr>`
+            : res.map(r => rowHtml(r, false)).join('');
 
-  document.getElementById('b-wrap').style.display = 'block';
+    document.getElementById('b-wrap').style.display = 'block';
 
-  if (n > 0) {
-    const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};
-    res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });
-    const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];
+    if (n > 0) {
+      const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};
+      res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });
+      const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];
 
-    document.getElementById('b-stats').style.display = 'flex';
-    document.getElementById('b-stats').innerHTML = `
+      document.getElementById('b-stats').style.display = 'flex';
+      document.getElementById('b-stats').innerHTML = `
       <div class="stat-pill"><span class="stat-pill-label">Resultados</span><span class="stat-pill-value" style="color:var(--accent)">${n}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Alta</span><span class="stat-pill-value" style="color:var(--alta)">${pCnt.ALTA}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Media</span><span class="stat-pill-value" style="color:var(--media)">${pCnt.MEDIA}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Baja</span><span class="stat-pill-value" style="color:var(--baja)">${pCnt.BAJA}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Zona top</span><span class="stat-pill-value" style="font-size:.9rem">${topZona?topZona[0]:'—'}</span></div>`;
 
-    document.getElementById('b-charts').style.display = 'block';
-    const zEntries = Object.entries(zCnt).sort((a,b)=>b[1]-a[1]);
-    mkBar('ch-b-zonas', zEntries.map(e=>e[0]), zEntries.map(e=>e[1]),
-          zEntries.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
-    mkDoughnut('ch-b-prio', ['Alta','Media','Baja'], [pCnt.ALTA,pCnt.MEDIA,pCnt.BAJA], PRIO_COLORS);
-  } else {
+      document.getElementById('b-charts').style.display = 'block';
+      const zEntries = Object.entries(zCnt).sort((a,b)=>b[1]-a[1]);
+      mkBar('ch-b-zonas', zEntries.map(e=>e[0]), zEntries.map(e=>e[1]),
+              zEntries.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
+      mkDoughnut('ch-b-prio', ['Alta','Media','Baja'], [pCnt.ALTA,pCnt.MEDIA,pCnt.BAJA], PRIO_COLORS);
+    } else {
+      document.getElementById('b-stats').style.display  = 'none';
+      document.getElementById('b-charts').style.display = 'none';
+    }
+  }
+
+  function limpiar() {
+    ['f-zona','f-tipo','f-prio'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('b-wrap').style.display   = 'none';
     document.getElementById('b-stats').style.display  = 'none';
     document.getElementById('b-charts').style.display = 'none';
+    document.getElementById('b-info').textContent = '';
   }
-}
 
-function limpiar() {
-  ['f-zona','f-tipo','f-prio'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('b-wrap').style.display   = 'none';
-  document.getElementById('b-stats').style.display  = 'none';
-  document.getElementById('b-charts').style.display = 'none';
-  document.getElementById('b-info').textContent = '';
-}
-
-async function doRefresh() {
-  const btn = document.getElementById('btn-refresh');
-  btn.classList.add('spinning'); btn.disabled = true;
-  try {
-    const res = await fetch('/api/dashboard');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    data = json;
-    renderInicio();
-    renderDatos();
-    populateFilters();
-    const active = document.querySelector('.nav-item.active')?.dataset.s;
-    if (active === 'graficas') renderGraficas();
-    document.getElementById('last-update').textContent =
-      'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
-  } catch (err) {
-    console.error(err);
-    ['tabla-inicio','tabla-datos'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML =
-        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">Error: ${err.message}</td></tr>`;
-    });
-  } finally {
-    btn.classList.remove('spinning'); btn.disabled = false;
+  async function doRefresh() {
+    const btn = document.getElementById('btn-refresh');
+    btn.classList.add('spinning'); btn.disabled = true;
+    try {
+      const res = await fetch('/api/dashboard');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      data = json;
+      renderInicio();
+      renderDatos();
+      populateFilters();
+      const active = document.querySelector('.nav-item.active')?.dataset.s;
+      if (active === 'graficas') renderGraficas();
+      document.getElementById('last-update').textContent =
+              'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
+    } catch (err) {
+      console.error(err);
+      ['tabla-inicio','tabla-datos'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML =
+                `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--alta)">Error: ${err.message}</td></tr>`;
+      });
+    } finally {
+      btn.classList.remove('spinning'); btn.disabled = false;
+    }
   }
-}
 
-doRefresh();
-setInterval(doRefresh, 5000);
+  doRefresh();
+  setInterval(doRefresh, 5000);
 </script>
 </body>
 </html>
