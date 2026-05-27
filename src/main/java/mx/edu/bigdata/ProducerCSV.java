@@ -31,36 +31,28 @@ public class ProducerCSV {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.ACKS_CONFIG, "all");
-
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props);
              BufferedReader reader = new BufferedReader(new FileReader(CSV_PATH))) {
-
             System.out.println("=== ProducerCSV iniciado. Enviando al topic: " + TOPIC + " ===");
-
             String line;
             boolean primeraFila = true;
             int enviados = 0;
-
             while ((line = reader.readLine()) != null) {
                 if (primeraFila) {
                     primeraFila = false;
                     continue;
                 }
-
                 try {
                     String[] cols = line.split(",", -1);
-
                     if (cols.length < MIN_COLUMNS) {
                         System.err.printf("[SKIP] Columnas insuficientes (%d): %s%n", cols.length, line);
                         continue;
                     }
-
                     String folio    = cols[IDX_FOLIO].trim();
                     String tipo     = cols[IDX_INCIDENTE].trim();
                     String hora     = cols[IDX_FECHA_CREACION].trim() + " " + cols[IDX_HORA_CREACION].trim();
                     String alarma   = cols[IDX_CLAS_ALARMA].trim();
                     String zona     = cols[IDX_ALCALDIA].trim();
-
                     String prioridad;
                     if (alarma.contains("URGENCIAS MEDICAS")) {
                         prioridad = "ALTA";
@@ -69,14 +61,12 @@ public class ProducerCSV {
                     } else {
                         prioridad = "BAJA";
                     }
-
                     final String json = String.format(
                         "{\"folio\":\"%s\",\"zona\":\"%s\",\"tipo\":\"%s\",\"prioridad\":\"%s\",\"hora\":\"%s\"}",
                         esc(folio), esc(zona), esc(tipo), prioridad, esc(hora)
                     );
 
                     ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC, zona, json);
-
                     producer.send(record, (metadata, exception) -> {
                         if (exception != null) {
                             System.err.println("[ERROR] Al enviar: " + exception.getMessage());
@@ -85,7 +75,6 @@ public class ProducerCSV {
                                 metadata.partition(), metadata.offset(), json);
                         }
                     });
-
                     enviados++;
                     Thread.sleep(500);
 

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — Emergencias Médicas CDMX</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -30,48 +32,82 @@
     body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
     .app-shell { display: flex; min-height: 100vh; }
     .sidebar {
-      width: 240px; background: var(--sidebar-bg);
+      width: 248px;
+      background: linear-gradient(180deg, #0c1322 0%, #0f172a 60%, #111827 100%);
       display: flex; flex-direction: column;
       position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+      border-right: 1px solid rgba(255,255,255,.055);
     }
     .sidebar-logo {
-      padding: 1.4rem 1.2rem 1.2rem;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display: flex; align-items: center; gap: .75rem;
+      padding: 1.5rem 1.3rem 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; gap: .9rem;
     }
     .logo-icon {
-      width: 38px; height: 38px; background: var(--accent); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: linear-gradient(135deg, #1e7fb5 0%, #0e5f8a 100%);
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(30,127,181,.45);
     }
-    .logo-text h2 { font-size: .8rem; font-weight: 700; color: #fff; letter-spacing: .02em; line-height: 1.3; }
-    .logo-text p  { font-size: .67rem; color: var(--sidebar-text); margin-top: 2px; }
-    .nav-list { list-style: none; padding: 1rem .7rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
-    .nav-item { border-radius: 9px; cursor: pointer; }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-text h2 { font-size: .83rem; font-weight: 700; color: #f1f5f9; letter-spacing: .02em; line-height: 1.3; }
+    .logo-text p  { font-size: .66rem; color: #475569; margin-top: 3px; letter-spacing: .01em; }
+    .nav-section-label {
+      padding: 1.35rem 1.3rem .45rem;
+      font-size: .59rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .12em; color: #334155;
+    }
+    .nav-list { list-style: none; padding: 0 .75rem 1rem; flex: 1; display: flex; flex-direction: column; gap: .12rem; }
+    .nav-item { border-radius: 10px; cursor: pointer; position: relative; }
     .nav-link {
-      display: flex; align-items: center; gap: .65rem;
-      padding: .68rem .85rem;
-      color: var(--sidebar-text); font-size: .84rem; font-weight: 500;
-      border-radius: 9px; transition: color .15s, background .15s; user-select: none;
+      display: flex; align-items: center; gap: .7rem;
+      padding: .74rem .95rem;
+      color: #64748b; font-size: .83rem; font-weight: 500;
+      border-radius: 10px; transition: color .18s, background .18s; user-select: none;
+      position: relative; overflow: hidden;
     }
-    .nav-link:hover { background: var(--sidebar-hover); color: #fff; }
-    .nav-item.active .nav-link { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }
-    .nav-icon { width: 17px; height: 17px; flex-shrink: 0; }
+    .nav-link:hover { background: rgba(255,255,255,.055); color: #cbd5e1; }
+    .nav-link:hover .nav-icon { opacity: .9; }
+    .nav-item.active .nav-link {
+      background: rgba(30,127,181,.18);
+      color: #7dd3fc;
+      font-weight: 600;
+    }
+    .nav-item.active .nav-link::before {
+      content: '';
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 56%; min-height: 18px;
+      background: linear-gradient(180deg, #38bdf8, #1e7fb5);
+      border-radius: 0 3px 3px 0;
+    }
+    .nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: .55; transition: opacity .18s; }
+    .nav-item.active .nav-link .nav-icon { opacity: 1; }
+    .nav-divider {
+      height: 1px; background: rgba(255,255,255,.06);
+      margin: .55rem .75rem;
+    }
     .sidebar-foot {
-      padding: 1rem 1.2rem;
-      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 1rem 1.3rem 1.2rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; flex-direction: column; gap: .65rem;
     }
     .live-pill {
-      display: inline-flex; align-items: center; gap: .4rem;
-      background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.22);
-      border-radius: 999px; padding: .28rem .7rem;
-      font-size: .7rem; color: #4ade80; font-weight: 600;
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(34,197,94,.09); border: 1px solid rgba(34,197,94,.2);
+      border-radius: 999px; padding: .3rem .75rem;
+      font-size: .68rem; color: #4ade80; font-weight: 600; letter-spacing: .01em;
     }
     .live-dot {
       width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
-      animation: livepulse 1.6s ease infinite;
+      animation: livepulse 1.6s ease infinite; flex-shrink: 0;
     }
-    @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
-    .main-container { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .sidebar-version {
+      font-size: .6rem; color: #1e293b; font-weight: 500; letter-spacing: .04em;
+      text-align: center;
+    }
+    @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+    .main-container { margin-left: 248px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .topbar {
       background: var(--surface); border-bottom: 1px solid var(--border);
       padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between;
@@ -223,6 +259,28 @@
       text-align: center; padding: 1.1rem; font-size: .7rem;
       color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);
     }
+    #map-container { height: 500px; border-radius: 10px; z-index: 1; }
+    .map-legend {
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: .85rem 1.2rem; margin-bottom: 1.2rem;
+      align-items: center;
+    }
+    .map-legend-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-right: .4rem; }
+    .legend-item { display: flex; align-items: center; gap: .42rem; font-size: .8rem; color: var(--text); }
+    .legend-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; opacity: .85; }
+    .nav-badge {
+      margin-left: auto; background: #ef4444; color: #fff;
+      border-radius: 999px; font-size: .62rem; font-weight: 700;
+      padding: .1rem .42rem; min-width: 18px; text-align: center; display: none;
+    }
+    .alertas-kpi {
+      background: var(--alta-bg); border: 1px solid #fca5a5; border-radius: 12px;
+      padding: .85rem 1.2rem; margin-bottom: 1.4rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .alertas-kpi-num { font-size: 2rem; font-weight: 800; color: var(--alta); line-height: 1; }
+    .alertas-kpi-label { font-size: .78rem; color: #b91c1c; font-weight: 600; }
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .main-container { margin-left: 0; }
@@ -236,12 +294,18 @@
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon"></div>
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
       <div class="logo-text">
         <h2>Emergencias CDMX</h2>
         <p>Monitor en tiempo real</p>
       </div>
     </div>
+
+    <p class="nav-section-label">Menú principal</p>
     <ul class="nav-list">
       <li class="nav-item active" data-s="inicio">
         <div class="nav-link">
@@ -277,9 +341,36 @@
           Búsqueda Avanzada
         </div>
       </li>
+      <li class="nav-item" data-s="mapa">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+            <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+          </svg>
+          Mapa
+        </div>
+      </li>
+
+      <div class="nav-divider"></div>
+
+      <li class="nav-item" data-s="alertas">
+        <div class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          Alertas
+          <span class="nav-badge" id="alertas-nav-badge">0</span>
+        </div>
+      </li>
     </ul>
+
     <div class="sidebar-foot">
-      <div class="live-pill"><span class="live-dot"></span>EN VIVO · Kafka · Actualizacion cada 10 s  </div> <br>
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        EN VIVO · Kafka · cada 10 s
+      </div>
+      <div class="sidebar-version">Sistema de Emergencias CDMX · v1.0</div>
     </div>
   </nav>
   <!--  MAIN -->
@@ -291,6 +382,8 @@
       </div>
       <div class="topbar-right">
         <span id="last-update">Última actualización: —</span>
+
+
         <button id="btn-refresh" onclick="doRefresh()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -299,6 +392,8 @@
           </svg>
           Actualizar
         </button>
+
+
       </div>
     </header>
     <main class="content">
@@ -310,7 +405,7 @@
         <div class="kpi-grid">
           <div class="kpi k-total">
             <div class="kpi-icon"></div>
-            <span class="kpi-label">Total registradas</span>
+            <span class="kpi-label">Total Registradas</span>
             <span class="kpi-value" id="kpi-total">—</span>
             <span class="kpi-sub">en la base de datos</span>
           </div>
@@ -491,6 +586,49 @@
           </div>
         </div>
       </section>
+
+      <!-- ALERTAS CRÍTICAS -->
+      <section id="sec-alertas" class="section">
+        <div class="sec-header">
+          <h2>Alertas Críticas</h2>
+          <p>Historial de emergencias con prioridad ALTA — últimas 50 en memoria</p>
+        </div>
+        <div class="alertas-kpi">
+          <div>
+            <div class="alertas-kpi-num" id="alertas-kpi-num">0</div>
+            <div class="alertas-kpi-label">Alertas ALTA acumuladas en esta sesión</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Emergencias prioritarias</h3>
+            <span class="table-badge" id="alertas-count-badge">0 alertas</span>
+          </div>
+          <table>
+            <thead><tr><th>#&nbsp;ID</th><th>Zona</th><th>Tipo de emergencia</th><th>Hora</th></tr></thead>
+            <tbody id="tabla-alertas">
+              <tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Sin alertas críticas aún</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MAPA -->
+      <section id="sec-mapa" class="section">
+        <div class="sec-header">
+          <h2>Mapa de Emergencias</h2>
+          <p>Distribución geográfica por alcaldía — Ciudad de México</p>
+        </div>
+        <div class="map-legend">
+          <span class="map-legend-title">Leyenda</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Más de 100 emergencias</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Entre 50 y 100</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#1f7529"></span>Menos de 50</span>
+        </div>
+        <div class="chart-card" style="padding:0;overflow:hidden">
+          <div id="map-container"></div>
+        </div>
+      </section>
     </main>
     <footer>Sistema de Emergencias Médicas CDMX &nbsp;</footer>
   </div>
@@ -501,8 +639,8 @@
   const CH  = {};
   const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
   const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
-  const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
-  const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada' };
+  const PRIO_COLORS = ['#ef4444','#f59e0b','#1f7529'];
+  const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada', mapa:'Mapa', alertas:'Alertas Críticas' };
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
       const s = item.dataset.s;
@@ -511,7 +649,8 @@
       item.classList.add('active');
       document.getElementById('sec-' + s).classList.add('active');
       document.getElementById('page-title').textContent = PAGE_TITLES[s];
-      if (s === 'graficas' && data) renderGraficas();
+      if (s === 'mapa' && data) renderMapa();
+      if (s === 'alertas') renderAlertas();
     });
   });
   function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
@@ -747,6 +886,151 @@
     document.getElementById('b-info').textContent = '';
   }
 
+  const ALCALDIA_COORDS = {
+    'IZTAPALAPA':              [19.3573, -99.0603],
+    'GUSTAVO A. MADERO':       [19.4869, -99.1178],
+    'ALVARO OBREGON':          [19.3584, -99.1972],
+    'TLALPAN':                 [19.2924, -99.1625],
+    'COYOACAN':                [19.3467, -99.1617],
+    'CUAUHTEMOC':              [19.4284, -99.1420],
+    'AZCAPOTZALCO':            [19.4862, -99.1842],
+    'MIGUEL HIDALGO':          [19.4178, -99.1975],
+    'VENUSTIANO CARRANZA':     [19.4291, -99.1012],
+    'IZTACALCO':               [19.3950, -99.0926],
+    'BENITO JUAREZ':           [19.3984, -99.1571],
+    'TLAHUAC':                 [19.2907, -99.0095],
+    'LA MAGDALENA CONTRERAS':  [19.3139, -99.2360],
+    'MAGDALENA CONTRERAS':     [19.3139, -99.2360],
+    'CUAJIMALPA':              [19.3601, -99.2957],
+    'CUAJIMALPA DE MORELOS':   [19.3601, -99.2957],
+    'MILPA ALTA':              [19.1893, -98.9779],
+    'XOCHIMILCO':              [19.2627, -99.1030],
+  };
+
+  // --- NOTIFICACIONES + HISTORIAL DE ALERTAS ---
+  const alertHistory = [];
+  const seenIds = new Set();
+  let isFirstLoad = true;
+
+  function requestNotifPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  function processAlerts(emergencias) {
+    const newAltas = [];
+    (emergencias || []).forEach(e => {
+      if (!seenIds.has(e.id)) {
+        seenIds.add(e.id);
+        if (e.prioridad === 'ALTA') {
+          if (!isFirstLoad) newAltas.push(e);
+          alertHistory.unshift(e);
+        }
+      }
+    });
+    if (alertHistory.length > 50) alertHistory.splice(50);
+    isFirstLoad = false;
+
+    if ('Notification' in window && Notification.permission === 'granted') {
+      newAltas.forEach(e => {
+        new Notification(`Emergencia ALTA - ${e.zona}: ${e.tipo}`, {
+          body: `ID: ${e.id} · ${e.hora.slice(11,16)}`,
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">🚨</text></svg>'
+        });
+      });
+    }
+
+    const badge = document.getElementById('alertas-nav-badge');
+    if (badge) {
+      badge.textContent = alertHistory.length;
+      badge.style.display = alertHistory.length > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
+  function renderAlertas() {
+    document.getElementById('alertas-kpi-num').textContent = alertHistory.length;
+    document.getElementById('alertas-count-badge').textContent = alertHistory.length + ' alerta' + (alertHistory.length !== 1 ? 's' : '');
+    const tb = document.getElementById('tabla-alertas');
+    if (!alertHistory.length) {
+      tb.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Sin alertas críticas en esta sesión</td></tr>';
+      return;
+    }
+    tb.innerHTML = alertHistory.map(r => `
+      <tr>
+        <td class="id-col">${r.id}</td>
+        <td><span class="zona-chip">${r.zona}</span></td>
+        <td>${r.tipo}</td>
+        <td style="color:var(--muted);font-size:.76rem">${r.hora.slice(11,16)}</td>
+      </tr>`).join('');
+  }
+
+
+  // --- MAPA (con popup mejorado) ---
+  let leafletMap = null;
+  let mapCircles = [];
+
+  function renderMapa() {
+    if (!data) return;
+
+    if (!leafletMap) {
+      leafletMap = L.map('map-container').setView([19.4326, -99.1332], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(leafletMap);
+    } else {
+      mapCircles.forEach(c => c.remove());
+      mapCircles = [];
+    }
+
+    // Tipo más frecuente por zona desde la muestra de emergencias
+    const zonaTipos = {};
+    (data.emergencias || []).forEach(e => {
+      if (!zonaTipos[e.zona]) zonaTipos[e.zona] = {};
+      zonaTipos[e.zona][e.tipo] = (zonaTipos[e.zona][e.tipo] || 0) + 1;
+    });
+
+    const totalGeneral = data.stats?.total || 1;
+    const zonas = data.zonas || [];
+    let fallbackIdx = 0;
+
+    zonas.forEach(z => {
+      const total = z.total || 0;
+      let coords = ALCALDIA_COORDS[z.zona.toUpperCase()];
+
+      if (!coords) {
+        const angle = (fallbackIdx * 40) * Math.PI / 180;
+        coords = [19.4326 + 0.06 * Math.sin(angle), -99.1332 + 0.06 * Math.cos(angle)];
+        fallbackIdx++;
+      }
+
+      let color, radius;
+      if (total > 100)       { color = '#ef4444'; radius = 1500; }
+      else if (total >= 50)  { color = '#f59e0b'; radius = 950; }
+      else                   { color = '#22c55e'; radius = 600; }
+
+      const tiposDeZona = zonaTipos[z.zona] || {};
+      const topTipo = Object.entries(tiposDeZona).sort((a, b) => b[1] - a[1])[0];
+      const tipoStr = topTipo ? topTipo[0] : '—';
+      const pct = Math.round(total / totalGeneral * 100);
+
+      const circle = L.circle(coords, {
+        color, fillColor: color, fillOpacity: 0.45, radius, weight: 2,
+      }).addTo(leafletMap);
+
+      circle.bindPopup(`
+        <strong style="font-size:.9rem;display:block;margin-bottom:4px">${z.zona}</strong>
+        <span style="color:#64748b;font-size:.78rem">Total de emergencias:</span> <b>${total}</b><br>
+        <span style="color:#64748b;font-size:.78rem">Tipo más frecuente:</span> <b>${tipoStr}</b><br>
+        <span style="color:#64748b;font-size:.78rem">Del total general:</span> <b>${pct}%</b>
+      `);
+      mapCircles.push(circle);
+    });
+
+    leafletMap.invalidateSize();
+  }
+
   async function doRefresh() {
     const btn = document.getElementById('btn-refresh');
     btn.classList.add('spinning'); btn.disabled = true;
@@ -756,11 +1040,13 @@
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       data = json;
+      processAlerts(json.emergencias);
       renderInicio();
       renderDatos();
+      renderGraficas();
+      renderAlertas();
       populateFilters();
-      const active = document.querySelector('.nav-item.active')?.dataset.s;
-      if (active === 'graficas') renderGraficas();
+      if (leafletMap) renderMapa();
       document.getElementById('last-update').textContent =
               'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
     } catch (err) {
@@ -775,6 +1061,7 @@
     }
   }
 
+  requestNotifPermission();
   doRefresh();
   setInterval(doRefresh, 10000);
 </script>
