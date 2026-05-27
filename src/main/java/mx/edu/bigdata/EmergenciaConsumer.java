@@ -32,12 +32,9 @@ public class EmergenciaConsumer {
     private static final String SQL_INSERT =
         "INSERT INTO emergencias (zona, tipo, prioridad, hora, fecha_registro) " +
         "VALUES (?, ?, ?, ?, ?) RETURNING id";
-
-
     private static int totalEmergencias = 0;
     private static final Map<String, Integer> conteoZonas = new HashMap<>();
     private static final Map<String, Integer> conteoTipos = new HashMap<>();
-
     public static void main(String[] args) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKER);
@@ -120,19 +117,18 @@ public class EmergenciaConsumer {
             .max(Map.Entry.comparingByValue())
             .map(Map.Entry::getKey)
             .orElse("N/A");
-
-        System.out.println("\n╔══════════════════════════════════════════════════╗");
-        System.out.println("║           RESUMEN ESTADISTICO                    ║");
-        System.out.println("╠══════════════════════════════════════════════════╣");
-        System.out.printf( "║  Total de emergencias   : %-22d║%n", totalEmergencias);
-        System.out.printf( "║  Zona con mas casos     : %-22s║%n", zonaTop + " (" + conteoZonas.get(zonaTop) + ")");
-        System.out.printf( "║  Tipo mas frecuente     : %-22s║%n", tipoTop + " (" + conteoTipos.get(tipoTop) + ")");
-        System.out.println("╠══════════════════════════════════════════════════╣");
-        System.out.println("║  Emergencias por zona:                           ║");
+        System.out.println("\n+--------------------------------------------------+");
+        System.out.println("|           RESUMEN ESTADISTICO                    |");
+        System.out.println("+--------------------------------------------------+");
+        System.out.printf( "|  Total de emergencias   : %-22d|%n", totalEmergencias);
+        System.out.printf( "|  Zona con mas casos     : %-22s|%n", zonaTop + " (" + conteoZonas.get(zonaTop) + ")");
+        System.out.printf( "|  Tipo mas frecuente     : %-22s|%n", tipoTop + " (" + conteoTipos.get(tipoTop) + ")");
+        System.out.println("+--------------------------------------------------+");
+        System.out.println("|  Emergencias por zona:                           |");
         conteoZonas.entrySet().stream()
             .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-            .forEach(e -> System.out.printf("║    %-20s : %-24d║%n", e.getKey(), e.getValue()));
-        System.out.println("╚══════════════════════════════════════════════════╝\n");
+            .forEach(e -> System.out.printf("|    %-20s : %-24d|%n", e.getKey(), e.getValue()));
+        System.out.println("+--------------------------------------------------+\n");
     }
 
     private static String extraerCampo(String json, String campo) {
