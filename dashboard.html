@@ -581,6 +581,7 @@
     });
   }
 
+
   function badge(p) {
     const cls = p==='ALTA'?'alta':p==='MEDIA'?'media':'baja';
     return `<span class="badge badge-${cls}">${p}</span>`;
@@ -724,7 +725,7 @@
       <div class="stat-pill"><span class="stat-pill-label">Resultados</span><span class="stat-pill-value" style="color:var(--accent)">${n}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Alta</span><span class="stat-pill-value" style="color:var(--alta)">${pCnt.ALTA}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Media</span><span class="stat-pill-value" style="color:var(--media)">${pCnt.MEDIA}</span></div>
-      <div class="stat-pill"><span class="stat-pill-label">Baja</span><span class="stat-pill-value" style="color:var(--baja)">${pCnt.BAJA}</span></div>
+      <div class="stat-pill"><span class="stat-pill-label">Bajas</span><span class="stat-pill-value" style="color:var(--baja)">${pCnt.BAJA}</span></div>
       <div class="stat-pill"><span class="stat-pill-label">Zona top</span><span class="stat-pill-value" style="font-size:.9rem">${topZona?topZona[0]:'—'}</span></div>`;
 
       document.getElementById('b-charts').style.display = 'block';
