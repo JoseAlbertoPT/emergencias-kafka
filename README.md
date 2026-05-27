@@ -6,11 +6,17 @@ Sistema que simula una central de emergencias médicas usando arquitectura Produ
 ---
 
 ## Tecnologías
-- Java 17
-- Apache Kafka 2.7.0
-- Apache Zookeeper 3.7.0
-- PostgreSQL
-- Maven
+
+
+| Tecnología | Versión | Rol en el proyecto |
+|---|---|---|
+| **Java** | 17 | Lenguaje principal. Implementa el Producer, Consumer y Servidor Web |
+| **Apache Kafka** | 2.7.0 | Message broker. Recibe y distribuye los mensajes de emergencias en tiempo real |
+| **Apache Zookeeper** | 3.7.0 | Coordinador del cluster de Kafka. Gestiona el estado de los brokers |
+| **PostgreSQL** | 16 | Base de datos. Almacena todas las emergencias procesadas por el Consumer |
+| **Maven** | 3.8 | Gestor de dependencias y compilación del proyecto Java |
+| **Chart.js** | 4.4 | Librería JavaScript para las gráficas dinámicas del dashboard |
+| **HTML/CSS/JS** | - | Frontend del dashboard web con 4 secciones y búsqueda avanzada |
 
 ---
 
