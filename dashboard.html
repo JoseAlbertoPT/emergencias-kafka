@@ -764,7 +764,6 @@
     const alta  = stats.alta  || 0;
     const zonaTop = zonas[0] || { zona: '—', total: 0 };
     const tipoTop = tipos[0] || { tipo: '—', total: 0 };
-
     document.getElementById('kpi-total').textContent    = total;
     document.getElementById('kpi-alta').textContent     = alta;
     document.getElementById('kpi-alta-pct').textContent = total > 0 ? Math.round(alta/total*100)+'% del total' : '—';
