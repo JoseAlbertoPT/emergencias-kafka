@@ -24,7 +24,6 @@ public class EmergenciaConsumer {
     private static final String TOPIC   = "emergencias-medicas";
     private static final String BROKER  = "localhost:9092";
     private static final String GROUP   = "grupo-emergencias";
-
     private static final String DB_URL  = "jdbc:postgresql://localhost:5432/emergencias_db";
     private static final String DB_USER = "postgres";
     private static final String DB_PASS = "postgres123";
@@ -112,7 +111,6 @@ public class EmergenciaConsumer {
             .max(Map.Entry.comparingByValue())
             .map(Map.Entry::getKey)
             .orElse("N/A");
-
         String tipoTop = conteoTipos.entrySet().stream()
             .max(Map.Entry.comparingByValue())
             .map(Map.Entry::getKey)
@@ -130,7 +128,6 @@ public class EmergenciaConsumer {
             .forEach(e -> System.out.printf("|    %-20s : %-24d|%n", e.getKey(), e.getValue()));
         System.out.println("+--------------------------------------------------+\n");
     }
-
     private static String extraerCampo(String json, String campo) {
         String clave = "\"" + campo + "\":\"";
         int inicio = json.indexOf(clave);

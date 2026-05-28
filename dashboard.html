@@ -260,6 +260,15 @@
       color: var(--muted); border-top: 1px solid var(--border); background: var(--surface);
     }
     #map-container { height: 500px; border-radius: 10px; z-index: 1; }
+    .map-circle-label {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      font-size: 11px; font-weight: 700; color: #fff;
+      text-align: center; pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0,0,0,.7); white-space: nowrap;
+    }
+    .map-circle-label::before { display: none !important; }
     .map-legend {
       display: flex; gap: 1.2rem; flex-wrap: wrap;
       background: var(--surface); border: 1px solid var(--border);
@@ -382,8 +391,6 @@
       </div>
       <div class="topbar-right">
         <span id="last-update">Última actualización: —</span>
-
-
         <button id="btn-refresh" onclick="doRefresh()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -392,8 +399,6 @@
           </svg>
           Actualizar
         </button>
-
-
       </div>
     </header>
     <main class="content">
@@ -911,7 +916,6 @@
   const alertHistory = [];
   const seenIds = new Set();
   let isFirstLoad = true;
-
   function requestNotifPermission() {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -931,7 +935,6 @@
     });
     if (alertHistory.length > 50) alertHistory.splice(50);
     isFirstLoad = false;
-
     if ('Notification' in window && Notification.permission === 'granted') {
       newAltas.forEach(e => {
         new Notification(`Emergencia ALTA - ${e.zona}: ${e.tipo}`, {
@@ -940,14 +943,12 @@
         });
       });
     }
-
     const badge = document.getElementById('alertas-nav-badge');
     if (badge) {
       badge.textContent = alertHistory.length;
       badge.style.display = alertHistory.length > 0 ? 'inline-flex' : 'none';
     }
   }
-
   function renderAlertas() {
     document.getElementById('alertas-kpi-num').textContent = alertHistory.length;
     document.getElementById('alertas-count-badge').textContent = alertHistory.length + ' alerta' + (alertHistory.length !== 1 ? 's' : '');
@@ -1005,10 +1006,13 @@
         fallbackIdx++;
       }
 
-      let color, radius;
-      if (total > 100)       { color = '#ef4444'; radius = 1500; }
-      else if (total >= 50)  { color = '#f59e0b'; radius = 950; }
-      else                   { color = '#22c55e'; radius = 600; }
+      let color;
+      if (total > 100)       { color = '#ef4444'; }
+      else if (total >= 50)  { color = '#f59e0b'; }
+      else                   { color = '#22c55e'; }
+
+      // Radio proporcional al conteo para que los cambios sean visibles
+      const radius = Math.min(2200, Math.max(350, total * 14));
 
       const tiposDeZona = zonaTipos[z.zona] || {};
       const topTipo = Object.entries(tiposDeZona).sort((a, b) => b[1] - a[1])[0];
@@ -1018,6 +1022,11 @@
       const circle = L.circle(coords, {
         color, fillColor: color, fillOpacity: 0.45, radius, weight: 2,
       }).addTo(leafletMap);
+
+      // Etiqueta permanente con el conteo visible en el círculo
+      circle.bindTooltip(`<b>${total}</b>`, {
+        permanent: true, direction: 'center', className: 'map-circle-label',
+      });
 
       circle.bindPopup(`
         <strong style="font-size:.9rem;display:block;margin-bottom:4px">${z.zona}</strong>
@@ -1046,7 +1055,8 @@
       renderGraficas();
       renderAlertas();
       populateFilters();
-      if (leafletMap) renderMapa();
+      const mapVisible = document.getElementById('sec-mapa').classList.contains('active');
+      if (leafletMap || mapVisible) renderMapa();
       document.getElementById('last-update').textContent =
               'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
     } catch (err) {
