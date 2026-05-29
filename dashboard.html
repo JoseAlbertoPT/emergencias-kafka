@@ -30,7 +30,14 @@
       --baja: #22c55e;
       --baja-bg: #dcfce7;
     }
-    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(circle, #c8d4e0 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
     .app-shell { display: flex; min-height: 100vh; }
     .sidebar {
       width: 248px;
@@ -104,27 +111,33 @@
       animation: livepulse 1.6s ease infinite; flex-shrink: 0;
     }
     .sidebar-version {
-      font-size: .6rem; color: #1e293b; font-weight: 500; letter-spacing: .04em;
+      font-size: .6rem; color: #475569; font-weight: 500; letter-spacing: .04em;
       text-align: center;
     }
     @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
     .main-container { margin-left: 248px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .topbar {
-      background: var(--surface); border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
       padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(0,0,0,.05);
     }
     .topbar-title { font-size: .98rem; font-weight: 700; }
     .topbar-sub   { font-size: .73rem; color: var(--muted); margin-top: 1px; }
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
     #last-update  { font-size: .74rem; color: var(--muted); }
     #btn-refresh {
-      background: var(--accent-solid); color: #fff; border: none;
-      padding: .48rem 1.05rem; border-radius: 8px; font-size: .81rem; font-weight: 600;
+      background: linear-gradient(135deg, #268cba 0%, #1a6f99 100%);
+      color: #fff; border: none;
+      padding: .48rem 1.1rem; border-radius: 8px; font-size: .81rem; font-weight: 600;
       cursor: pointer; display: flex; align-items: center; gap: .38rem;
-      transition: background .2s;
+      transition: opacity .2s, box-shadow .2s;
+      box-shadow: 0 2px 8px rgba(38,140,186,.35);
     }
-    #btn-refresh:hover { background: var(--accent-hover); }
+    #btn-refresh:hover { opacity: .88; box-shadow: 0 4px 14px rgba(38,140,186,.45); }
     #btn-refresh.spinning svg { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .content { padding: 2rem; flex: 1; }
@@ -146,15 +159,28 @@
       background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
       padding: 1.35rem 1.4rem; display: flex; flex-direction: column; gap: .38rem;
       position: relative; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+      transition: box-shadow .22s, transform .22s;
+    }
+    .kpi:hover {
+      box-shadow: 0 8px 28px rgba(0,0,0,.1);
+      transform: translateY(-2px);
     }
     .kpi::after {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
     }
-    .kpi.k-total::after { background: var(--accent); }
-    .kpi.k-alta::after  { background: var(--alta); }
-    .kpi.k-media::after { background: var(--media); }
-    .kpi.k-baja::after  { background: var(--baja); }
-    .kpi-icon { font-size: 1.3rem; margin-bottom: .15rem; }
+    .kpi.k-total::after { background: linear-gradient(90deg, var(--accent-solid), #60c8f5); }
+    .kpi.k-alta::after  { background: linear-gradient(90deg, var(--alta), #fca5a5); }
+    .kpi.k-media::after { background: linear-gradient(90deg, var(--media), #fcd34d); }
+    .kpi.k-baja::after  { background: linear-gradient(90deg, var(--baja), #86efac); }
+    .kpi-icon {
+      width: 36px; height: 36px; margin-bottom: .35rem;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .k-total .kpi-icon { background: rgba(38,140,186,.12); color: var(--accent-solid); }
+    .k-alta  .kpi-icon { background: rgba(239,68,68,.12);  color: var(--alta); }
+    .k-media .kpi-icon { background: rgba(245,158,11,.12); color: var(--media); }
+    .k-baja  .kpi-icon { background: rgba(34,197,94,.12);  color: var(--baja); }
     .kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
     .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
     .kpi.k-total .kpi-value { color: var(--accent-solid); }
@@ -162,14 +188,23 @@
     .kpi.k-media .kpi-value { color: var(--media); }
     .kpi.k-baja  .kpi-value { color: var(--baja); }
     .kpi-sub { font-size: .74rem; color: var(--muted); }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
-    .four-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
-    @media (max-width: 900px) { .two-col,.four-col { grid-template-columns: 1fr; } }
+    .two-col  { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
+    .four-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.1rem; margin-bottom: 1.6rem; }
+    @media (max-width: 1100px) { .four-col { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px)  { .two-col,.four-col { grid-template-columns: 1fr; } }
     .chart-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
       padding: 1.5rem 1.5rem 1.35rem;
-      box-shadow: 0 2px 16px rgba(0,0,0,.055), 0 1px 3px rgba(0,0,0,.03);
+      box-shadow: 0 1px 4px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.03);
       transition: box-shadow .25s, transform .25s;
+      position: relative; overflow: hidden;
+    }
+    .chart-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent-solid) 0%, #60c8f5 50%, transparent 100%);
+      opacity: .45;
+      border-radius: 16px 16px 0 0;
     }
     .chart-card:hover {
       box-shadow: 0 8px 30px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
@@ -245,14 +280,19 @@
       border-radius: 8px; font-size: .84rem; color: var(--text);
       background: var(--bg); outline: none; transition: border-color .15s;
     }
-    .fgroup select:focus, .fgroup input:focus { border-color: var(--accent-solid); }
+    .fgroup select:focus, .fgroup input:focus {
+      border-color: var(--accent-solid);
+      box-shadow: 0 0 0 3px rgba(38,140,186,.15);
+    }
     .factions { display: flex; gap: .55rem; align-items: flex-end; }
     .btn-primary {
-      background: var(--accent-solid); color: #fff; border: none;
+      background: linear-gradient(135deg, #268cba 0%, #1a6f99 100%);
+      color: #fff; border: none;
       padding: .52rem 1.15rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
-      cursor: pointer; transition: background .2s; white-space: nowrap;
+      cursor: pointer; transition: opacity .2s, box-shadow .2s; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(38,140,186,.3);
     }
-    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:hover { opacity: .88; box-shadow: 0 4px 14px rgba(38,140,186,.4); }
     .btn-ghost {
       background: var(--bg); color: var(--muted); border: 1.5px solid var(--border);
       padding: .52rem .9rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
@@ -301,14 +341,30 @@
       padding: .1rem .42rem; min-width: 18px; text-align: center; display: none;
     }
     .alertas-kpi {
-      background: var(--alta-bg); border: 1px solid #fca5a5; border-radius: 12px;
+      background: linear-gradient(135deg, #fef2f2 0%, #fff8f8 100%);
+      border: 1px solid #fca5a5; border-radius: 12px;
       padding: .85rem 1.2rem; margin-bottom: 1.4rem;
       display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      box-shadow: 0 2px 12px rgba(239,68,68,.1);
     }
     .alertas-kpi-num { font-size: 2rem; font-weight: 800; color: var(--alta); line-height: 1; }
     .alertas-kpi-label { font-size: .78rem; color: #b91c1c; font-weight: 600; }
+    .hamburger-btn {
+      display: none; background: none; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: .38rem .5rem; cursor: pointer; color: var(--text);
+      align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s; flex-shrink: 0;
+    }
+    .hamburger-btn:hover { border-color: var(--accent-solid); background: rgba(38,140,186,.07); }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 99; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.open { display: block; }
     @media (max-width: 768px) {
-      .sidebar { display: none; }
+      .hamburger-btn { display: flex; }
+      .sidebar { transform: translateX(-100%); transition: transform .25s ease; }
+      .sidebar.open { transform: translateX(0); }
       .main-container { margin-left: 0; }
       .content { padding: 1rem; }
       .topbar { padding: .85rem 1rem; }
@@ -317,6 +373,7 @@
 </head>
 <body>
 <div class="app-shell">
+
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
@@ -405,15 +462,26 @@
     </div>
   </nav>
 
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
   <!--  MAIN -->
   <div class="main-container">
     <header class="topbar">
-      <div>
-        <div class="topbar-title" id="page-title">Inicio</div>
-        <div class="topbar-sub">Sistema de Emergencias Médicas CDMX  </div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <div class="topbar-title" id="page-title">Inicio</div>
+          <div class="topbar-sub">Sistema de Emergencias Médicas CDMX</div>
+        </div>
       </div>
       <div class="topbar-right">
-        <span id="last-update">Última actualización: —</span>
+        <span id="last-update">Última actualización: — </span>
         <button id="btn-refresh" onclick="doRefresh()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -434,28 +502,36 @@
 
         <div class="kpi-grid">
           <div class="kpi k-total">
-            <div class="kpi-icon"></div>
+            <div class="kpi-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
             <span class="kpi-label">Total Registradas</span>
             <span class="kpi-value" id="kpi-total">—</span>
             <span class="kpi-sub">en la base de datos</span>
           </div>
 
           <div class="kpi k-alta">
-            <div class="kpi-icon"></div>
+            <div class="kpi-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
             <span class="kpi-label">Prioridad Alta</span>
             <span class="kpi-value" id="kpi-alta">—</span>
             <span class="kpi-sub" id="kpi-alta-pct">—% del total</span>
           </div>
 
           <div class="kpi k-media">
-            <div class="kpi-icon"></div>
+            <div class="kpi-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
             <span class="kpi-label">Zona más crítica</span>
             <span class="kpi-value" id="kpi-zona" style="font-size:1.15rem">—</span>
             <span class="kpi-sub" id="kpi-zona-n">— emergencias</span>
           </div>
 
           <div class="kpi k-baja">
-            <div class="kpi-icon"></div>
+            <div class="kpi-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            </div>
             <span class="kpi-label">Tipo más frecuente</span>
             <span class="kpi-value" id="kpi-tipo" style="font-size:.95rem">—</span>
             <span class="kpi-sub" id="kpi-tipo-n">— casos</span>
@@ -523,7 +599,7 @@
       <section id="sec-graficas" class="section">
         <div class="sec-header">
           <h2>Análisis Visual</h2>
-          <p>Visualizaciones interactivas con Chart.js — datos en tiempo real</p>
+          <p>Visualizaciones interactivas con Chart.js — Datos en Tiempo Real</p>
         </div>
         <div class="four-col">
           <div class="chart-card">
@@ -951,15 +1027,12 @@
             tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
   }
 
-  //Render Gráficas
   function renderGraficas() {
     const { emergencias, zonas, tipos, stats } = data;
     const total = stats.total || 0;
 
     const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
     (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
-
-    // Scale sample prioridad to DB total using alta as anchor
     const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;
     const mediaEst = Math.round(cnt.MEDIA / sampleTotal * total);
     const bajaEst  = Math.max(0, total - stats.alta - mediaEst);
@@ -969,8 +1042,6 @@
             zonas.slice(0,7).map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]));
     mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
             tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
-
-    // Horizontal all zones
     mkBar('ch-g-horiz',
             zonas.map(z=>z.zona), zonas.map(z=>z.total),
             zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
@@ -1205,6 +1276,18 @@
       btn.classList.remove('spinning'); btn.disabled = false;
     }
   }
+
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+  });
 
   requestNotifPermission();
   doRefresh();
