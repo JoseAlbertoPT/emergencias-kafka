@@ -177,42 +177,51 @@
     .table-wrap {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; overflow: hidden; margin-bottom: 1.6rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
     }
     .table-header {
-      padding: .9rem 1.4rem; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); background: #f8fafc;
     }
-    .table-header h3  { font-size: .87rem; font-weight: 600; }
+    .table-header h3  { font-size: .9rem; font-weight: 700; color: var(--text); }
     .table-badge {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 999px; padding: .18rem .65rem;
-      font-size: .7rem; color: var(--muted); font-weight: 600;
+      background: #dbeafe; border: 1px solid #bfdbfe;
+      border-radius: 999px; padding: .22rem .82rem;
+      font-size: .69rem; color: #1d4ed8; font-weight: 700; letter-spacing: .01em;
     }
     table { width: 100%; border-collapse: collapse; }
-    thead tr { background: #f8fafc; }
+    thead tr { background: #f1f5f9; }
     th {
-      padding: .78rem 1.2rem; text-align: left;
-      font-size: .68rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; color: var(--muted);
+      padding: .85rem 1.3rem; text-align: left;
+      font-size: .67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--muted);
+      border-bottom: 2px solid var(--border); white-space: nowrap;
     }
-    td { padding: .82rem 1.2rem; font-size: .84rem; border-top: 1px solid var(--border); }
-    tbody tr:hover { background: rgba(38,140,186,.04); }
+    td {
+      padding: .9rem 1.3rem; font-size: .84rem;
+      border-top: 1px solid #f0f4f8; vertical-align: middle;
+    }
+    tbody tr { transition: background .12s; }
+    tbody tr:nth-child(even) { background: #fafcff; }
+    tbody tr:hover { background: rgba(38,140,186,.08); }
+    tbody tr:hover .id-col { color: #268cba; }
     .badge {
-      display: inline-flex; align-items: center; gap: .28rem;
-      padding: .2rem .6rem; border-radius: 999px; font-size: .71rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .24rem .68rem; border-radius: 999px; font-size: .71rem; font-weight: 700;
+      letter-spacing: .01em;
     }
-    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
-    .badge-alta  { color: var(--alta);  background: var(--alta-bg);  }
-    .badge-media { color: var(--media); background: var(--media-bg); }
-    .badge-baja  { color: var(--baja);  background: var(--baja-bg);  }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .badge-alta  { color: var(--alta);  background: var(--alta-bg);  border: 1px solid rgba(239,68,68,.2);  }
+    .badge-media { color: var(--media); background: var(--media-bg); border: 1px solid rgba(245,158,11,.2); }
+    .badge-baja  { color: var(--baja);  background: var(--baja-bg);  border: 1px solid rgba(34,197,94,.2);  }
     .badge-alta::before  { background: var(--alta);  }
     .badge-media::before { background: var(--media); }
     .badge-baja::before  { background: var(--baja);  }
     .zona-chip {
-      background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 6px;
-      padding: .17rem .52rem; font-size: .76rem; color: #3730a3; font-weight: 500;
+      background: #ede9fe; border: 1px solid #ddd6fe; border-radius: 7px;
+      padding: .2rem .62rem; font-size: .75rem; color: #5b21b6; font-weight: 600;
     }
-    .id-col { color: var(--muted); font-size: .76rem; font-family: monospace; }
+    .id-col { color: var(--muted); font-size: .75rem; font-family: monospace; font-weight: 600; }
     .search-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 14px; padding: 1.4rem; margin-bottom: 1.2rem;
@@ -276,7 +285,8 @@
       align-items: center;
     }
     .map-legend-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-right: .4rem; }
-    .legend-item { display: flex; align-items: center; gap: .42rem; font-size: .8rem; color: var(--text); }
+    .legend-item { display: flex; align-items: center;
+      gap: .42rem; font-size: .8rem; color: var(--text); }
     .legend-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; opacity: .85; }
     .nav-badge {
       margin-left: auto; background: #ef4444; color: #fff;
@@ -300,6 +310,7 @@
 </head>
 <body>
 <div class="app-shell">
+
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-logo">
@@ -365,13 +376,13 @@
       </li>
 
       <div class="nav-divider"></div>
-
       <li class="nav-item" data-s="alertas">
         <div class="nav-link">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
+
           Alertas
           <span class="nav-badge" id="alertas-nav-badge">0</span>
         </div>
@@ -383,7 +394,7 @@
         <span class="live-dot"></span>
         EN VIVO · Kafka · cada 10 s
       </div>
-      <div class="sidebar-version">Sistema de Emergencias CDMX · v1.0</div>
+      <div class="sidebar-version">Sistema de Emergencias CDMX</div>
     </div>
   </nav>
 
@@ -519,11 +530,6 @@
             <h3>Por tipo de emergencia</h3>
             <p class="csub">Distribución de tipos atendidos</p>
             <div class="chart-container md"><canvas id="ch-g-tipos"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <h3>Actividad por hora</h3>
-            <p class="csub">Últimas 10 emergencias agrupadas por hora</p>
-            <div class="chart-container md"><canvas id="ch-g-horas"></canvas></div>
           </div>
         </div>
         <div class="chart-card">
@@ -781,11 +787,9 @@
     (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
     mkDoughnut('ch-inicio-prio', ['Alta','Media','Baja'], [cnt.ALTA,cnt.MEDIA,cnt.BAJA], PRIO_COLORS);
   }
-
   function renderDatos() {
     const { emergencias, zonas, tipos } = data;
     document.getElementById('datos-badge').textContent = (emergencias?.length||0)+' registros';
-
     const tb = document.getElementById('tabla-datos');
     tb.innerHTML = emergencias && emergencias.length
             ? emergencias.map(r => rowHtml(r, false)).join('')
@@ -816,18 +820,6 @@
     mkPie('ch-g-tipos', tipos.map(t=>t.tipo), tipos.map(t=>t.total),
             tipos.map((_,i)=>TYPE_COLORS[i%TYPE_COLORS.length]));
 
-    // Activity by hour from sample
-    const hourMap = {};
-    (emergencias||[]).forEach(e => {
-      const h = parseInt(e.hora.slice(11,13),10);
-      hourMap[h] = (hourMap[h]||0)+1;
-    });
-    const hours = Array.from({length:24},(_,i)=>i);
-    mkBar('ch-g-horas',
-            hours.map(h=>h.toString().padStart(2,'0')+':00'),
-            hours.map(h=>hourMap[h]||0),
-            hours.map(()=>'#7c3aed'));
-
     // Horizontal all zones
     mkBar('ch-g-horiz',
             zonas.map(z=>z.zona), zonas.map(z=>z.total),
@@ -848,7 +840,6 @@
     const zona = document.getElementById('f-zona').value;
     const tipo = document.getElementById('f-tipo').value;
     const prio = document.getElementById('f-prio').value;
-
     let res = data.emergencias || [];
     if (zona) res = res.filter(e => e.zona === zona);
     if (tipo) res = res.filter(e => e.tipo === tipo);
@@ -870,7 +861,6 @@
       const zCnt={}, pCnt={ALTA:0,MEDIA:0,BAJA:0};
       res.forEach(r => { zCnt[r.zona]=(zCnt[r.zona]||0)+1; pCnt[r.prioridad]=(pCnt[r.prioridad]||0)+1; });
       const topZona = Object.entries(zCnt).sort((a,b)=>b[1]-a[1])[0];
-
       document.getElementById('b-stats').style.display = 'flex';
       document.getElementById('b-stats').innerHTML = `
       <div class="stat-pill"><span class="stat-pill-label">Resultados</span><span class="stat-pill-value" style="color:var(--accent)">${n}</span></div>
@@ -946,7 +936,7 @@
       newAltas.forEach(e => {
         new Notification(`Emergencia ALTA - ${e.zona}: ${e.tipo}`, {
           body: `ID: ${e.id} · ${e.hora.slice(11,16)}`,
-          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">🚨</text></svg>'
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20"></text></svg>'
         });
       });
     }
@@ -977,10 +967,8 @@
   // --- MAPA (con popup mejorado) ---
   let leafletMap = null;
   let mapCircles = [];
-
   function renderMapa() {
     if (!data) return;
-
     if (!leafletMap) {
       leafletMap = L.map('map-container').setView([19.4326, -99.1332], 11);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -992,17 +980,14 @@
       mapCircles = [];
     }
 
-    // Tipo más frecuente por zona desde la muestra de emergencias
     const zonaTipos = {};
     (data.emergencias || []).forEach(e => {
       if (!zonaTipos[e.zona]) zonaTipos[e.zona] = {};
       zonaTipos[e.zona][e.tipo] = (zonaTipos[e.zona][e.tipo] || 0) + 1;
     });
-
     const totalGeneral = data.stats?.total || 1;
     const zonas = data.zonas || [];
     let fallbackIdx = 0;
-
     zonas.forEach(z => {
       const total = z.total || 0;
       let coords = ALCALDIA_COORDS[z.zona.toUpperCase()];
@@ -1017,10 +1002,7 @@
       if (total > 100)       { color = '#ef4444'; }
       else if (total >= 50)  { color = '#f59e0b'; }
       else                   { color = '#22c55e'; }
-
-      // Radio proporcional al conteo para que los cambios sean visibles
       const radius = Math.min(2200, Math.max(350, total * 14));
-
       const tiposDeZona = zonaTipos[z.zona] || {};
       const topTipo = Object.entries(tiposDeZona).sort((a, b) => b[1] - a[1])[0];
       const tipoStr = topTipo ? topTipo[0] : '—';
@@ -1029,8 +1011,6 @@
       const circle = L.circle(coords, {
         color, fillColor: color, fillOpacity: 0.45, radius, weight: 2,
       }).addTo(leafletMap);
-
-      // Etiqueta permanente con el conteo visible en el círculo
       circle.bindTooltip(`<b>${total}</b>`, {
         permanent: true, direction: 'center', className: 'map-circle-label',
       });
@@ -1043,10 +1023,8 @@
       `);
       mapCircles.push(circle);
     });
-
     leafletMap.invalidateSize();
   }
-
   async function doRefresh() {
     const btn = document.getElementById('btn-refresh');
     btn.classList.add('spinning'); btn.disabled = true;
