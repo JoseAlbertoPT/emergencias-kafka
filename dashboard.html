@@ -17,6 +17,7 @@
       --muted: #64748b;
       --accent: rgb(38 140 186 / 0.18);
       --accent-hover: #1a6f99;
+      --accent-solid: #268cba;
       --sidebar-bg: #0f172a;
       --sidebar-text: #94a3b8;
       --sidebar-hover: rgba(255,255,255,.07);
@@ -118,7 +119,7 @@
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
     #last-update  { font-size: .74rem; color: var(--muted); }
     #btn-refresh {
-      background: var(--accent); color: #fff; border: none;
+      background: var(--accent-solid); color: #fff; border: none;
       padding: .48rem 1.05rem; border-radius: 8px; font-size: .81rem; font-weight: 600;
       cursor: pointer; display: flex; align-items: center; gap: .38rem;
       transition: background .2s;
@@ -156,7 +157,7 @@
     .kpi-icon { font-size: 1.3rem; margin-bottom: .15rem; }
     .kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
     .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
-    .kpi.k-total .kpi-value { color: var(--accent); }
+    .kpi.k-total .kpi-value { color: var(--accent-solid); }
     .kpi.k-alta  .kpi-value { color: var(--alta); }
     .kpi.k-media .kpi-value { color: var(--media); }
     .kpi.k-baja  .kpi-value { color: var(--baja); }
@@ -165,11 +166,17 @@
     .four-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.6rem; }
     @media (max-width: 900px) { .two-col,.four-col { grid-template-columns: 1fr; } }
     .chart-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-      padding: 1.35rem 1.4rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.5rem 1.5rem 1.35rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,.055), 0 1px 3px rgba(0,0,0,.03);
+      transition: box-shadow .25s, transform .25s;
     }
-    .chart-card h3    { font-size: .87rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
-    .chart-card .csub { font-size: .73rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .chart-card:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
+      transform: translateY(-2px);
+    }
+    .chart-card h3    { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; letter-spacing: -.01em; }
+    .chart-card .csub { font-size: .72rem; color: var(--muted); margin-bottom: 1.3rem; }
     .chart-container { position: relative; }
     .chart-container.sm { height: 200px; }
     .chart-container.md { height: 270px; }
@@ -238,10 +245,10 @@
       border-radius: 8px; font-size: .84rem; color: var(--text);
       background: var(--bg); outline: none; transition: border-color .15s;
     }
-    .fgroup select:focus, .fgroup input:focus { border-color: var(--accent); }
+    .fgroup select:focus, .fgroup input:focus { border-color: var(--accent-solid); }
     .factions { display: flex; gap: .55rem; align-items: flex-end; }
     .btn-primary {
-      background: var(--accent); color: #fff; border: none;
+      background: var(--accent-solid); color: #fff; border: none;
       padding: .52rem 1.15rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
       cursor: pointer; transition: background .2s; white-space: nowrap;
     }
@@ -251,7 +258,7 @@
       padding: .52rem .9rem; border-radius: 8px; font-size: .84rem; font-weight: 600;
       cursor: pointer; transition: border-color .2s, color .2s;
     }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-ghost:hover { border-color: var(--accent-solid); color: var(--accent-solid); }
     .stats-row { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
     .stat-pill {
       background: var(--surface); border: 1px solid var(--border);
@@ -658,9 +665,79 @@
 <script>
   let data = null;
   const CH  = {};
-  const ZONE_COLORS = ['#268cba','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#b45309','#1d4ed8','#0f766e','#9333ea'];
-  const TYPE_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f97316','#10b981','#06b6d4','#f59e0b','#ef4444','#84cc16','#a855f7'];
-  const PRIO_COLORS = ['#ef4444','#f59e0b','#1f7529'];
+  const ZONE_COLORS = ['#3b82f6','#8b5cf6','#f43f5e','#f97316','#10b981','#06b6d4','#eab308','#a855f7','#14b8a6','#ef4444'];
+  const TYPE_COLORS = ['#6366f1','#14b8a6','#f43f5e','#fb923c','#84cc16','#22d3ee','#facc15','#c084fc','#34d399','#f87171'];
+  const PRIO_COLORS = ['#ef4444','#f59e0b','#22c55e'];
+
+  function hexAlpha(hex, a) {
+    const c = hex.replace('#','');
+    const r = parseInt(c.slice(0,2),16), g = parseInt(c.slice(2,4),16), b = parseInt(c.slice(4,6),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  const gradientBarPlugin = {
+    id: 'gradientBar',
+    beforeDatasetsDraw(chart) {
+      const { ctx, chartArea, config } = chart;
+      if (!chartArea || config.type !== 'bar') return;
+      chart.data.datasets.forEach(ds => {
+        if (!ds._colors) return;
+        const horiz = chart.options.indexAxis === 'y';
+        ds.backgroundColor = ds._colors.map(c => {
+          const g = horiz
+            ? ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0)
+            : ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          g.addColorStop(0, hexAlpha(c, 0.35));
+          g.addColorStop(1, hexAlpha(c, 0.88));
+          return g;
+        });
+      });
+    }
+  };
+
+  const doughnutCenterPlugin = {
+    id: 'doughnutCenter',
+    afterDraw(chart) {
+      if (chart.config.type !== 'doughnut') return;
+      const ct = chart.options.plugins?.doughnutCenter;
+      if (!ct?.display) return;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#1e293b';
+      ctx.font = "700 1.3rem 'Segoe UI',system-ui,sans-serif";
+      ctx.fillText(ct.text ?? '', cx, ct.sub ? cy - 9 : cy);
+      if (ct.sub) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = "500 0.63rem 'Segoe UI',system-ui,sans-serif";
+        ctx.fillText(ct.sub, cx, cy + 11);
+      }
+      ctx.restore();
+    }
+  };
+
+  Chart.register(gradientBarPlugin, doughnutCenterPlugin);
+
+  Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = '#64748b';
+  Chart.defaults.animation.duration = 650;
+  Chart.defaults.animation.easing = 'easeOutQuart';
+  Object.assign(Chart.defaults.plugins.tooltip, {
+    backgroundColor: 'rgba(15,23,42,0.93)',
+    titleColor: '#f1f5f9',
+    bodyColor: '#94a3b8',
+    padding: { top:9, right:13, bottom:9, left:13 },
+    cornerRadius: 10,
+    titleFont: { size:11.5, weight:'600' },
+    bodyFont: { size:11 },
+    boxPadding: 5,
+    usePointStyle: true,
+  });
   const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada', mapa:'Mapa', alertas:'Alertas Críticas' };
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -675,28 +752,53 @@
     });
   });
   function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
+
   function mkBar(id, labels, values, colors, indexAxis='x') {
     kill(id);
+    const horiz = indexAxis === 'y';
+    const ds = {
+      data: values,
+      _colors: colors,
+      backgroundColor: colors.map(c => hexAlpha(c, 0.7)),
+      hoverBackgroundColor: colors.map(c => hexAlpha(c, 0.97)),
+      borderColor: 'transparent',
+      borderWidth: 0,
+      borderRadius: horiz ? { topRight:8, bottomRight:8 } : 8,
+      borderSkipped: false,
+    };
+    const valueAxis = horiz ? 'x' : 'y';
+    const catAxis   = horiz ? 'y' : 'x';
     CH[id] = new Chart(document.getElementById(id), {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors.map(c => c + 'bb'),
-          borderColor: colors,
-          borderWidth: 1.5,
-          borderRadius: 6,
-        }]
-      },
+      data: { labels, datasets: [ds] },
       options: {
         indexAxis,
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => `  ${ctx.formattedValue} emergencias` } }
+        },
         scales: {
-          [indexAxis === 'y' ? 'x' : 'y']: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-          [indexAxis === 'y' ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          [valueAxis]: {
+            beginAtZero: true,
+            grid: { color: '#f1f5f9', lineWidth: 1 },
+            border: { display: false },
+            ticks: { padding: 4, maxTicksLimit: 6, color: '#94a3b8' }
+          },
+          [catAxis]: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: {
+              font: { size: 10.5, weight: '500' },
+              padding: 6,
+              color: '#64748b',
+              callback(val) {
+                const lbl = this.getLabelForValue(val);
+                return lbl && lbl.length > 15 ? lbl.slice(0,14)+'…' : lbl;
+              }
+            }
+          }
         }
       }
     });
@@ -709,17 +811,37 @@
       type: 'doughnut',
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }]
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderWidth: 3,
+          borderColor: '#ffffff',
+          hoverOffset: 10,
+          hoverBorderColor: '#f8fafc',
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '65%',
+        cutout: '70%',
         plugins: {
-          legend: { position: legendPos, labels: { padding: 14, font: { size: 11 } } },
-          tooltip: { callbacks: {
+          doughnutCenter: { display: true, text: total.toLocaleString('es-MX'), sub: 'total' },
+          legend: {
+            position: legendPos,
+            labels: {
+              padding: 16,
+              font: { size: 11, weight: '500' },
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 8,
+              boxHeight: 8,
+            }
+          },
+          tooltip: {
+            callbacks: {
               label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`
-            }}
+            }
+          }
         }
       }
     });
@@ -727,16 +849,41 @@
 
   function mkPie(id, labels, values, colors) {
     kill(id);
+    const total = values.reduce((a,b)=>a+b,0);
     CH[id] = new Chart(document.getElementById(id), {
       type: 'pie',
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderWidth: 3,
+          borderColor: '#ffffff',
+          hoverOffset: 8,
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 10 } } }
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: { size: 10.5, weight: '500' },
+              padding: 12,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 8,
+              boxHeight: 8,
+              color: '#475569',
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.raw} (${total>0?Math.round(ctx.raw/total*100):0}%)`
+            }
+          }
+        }
       }
     });
   }
