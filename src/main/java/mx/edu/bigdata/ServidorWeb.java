@@ -79,7 +79,7 @@ public class ServidorWeb {
             sb.append("\"emergencias\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT id, zona, tipo, prioridad, hora, fecha_registro " +
-                    "FROM emergencias ORDER BY id DESC LIMIT 10")) {
+                    "FROM emergencias ORDER BY id DESC LIMIT 200")) {
                 ResultSet rs = stmt.executeQuery();
                 boolean first = true;
                 while (rs.next()) {
