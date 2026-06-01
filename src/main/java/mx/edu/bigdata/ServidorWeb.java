@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
+
 public class ServidorWeb {
     private static final int    PUERTO    = 3000;
     private static final String DASHBOARD = "dashboard.html";
@@ -96,7 +97,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("],");
-            // Totales generales
             sb.append("\"stats\":{");
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT COUNT(*) AS total, " +
@@ -109,7 +109,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("},");
-            // Por zona
             sb.append("\"zonas\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT zona, COUNT(*) AS total FROM emergencias " +
@@ -124,7 +123,6 @@ public class ServidorWeb {
                 }
             }
             sb.append("],");
-            // Por tipo
             sb.append("\"tipos\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT tipo, COUNT(*) AS total FROM emergencias " +

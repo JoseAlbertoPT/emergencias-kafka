@@ -15,8 +15,6 @@ public class ProducerCSV {
     private static final String TOPIC = "emergencias-medicas";
     private static final String BROKER = "localhost:9092";
     private static final String CSV_PATH = "datos_911_cdmx.csv";
-
-    // Indices de columnas en el CSV
     private static final int IDX_FOLIO            = 0;
     private static final int IDX_INCIDENTE        = 2;
     private static final int IDX_FECHA_CREACION   = 5;
