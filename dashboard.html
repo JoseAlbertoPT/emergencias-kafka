@@ -1033,7 +1033,6 @@
   function renderGraficas() {
     const { emergencias, zonas, tipos, stats } = data;
     const total = stats.total || 0;
-
     const cnt = { ALTA:0, MEDIA:0, BAJA:0 };
     (emergencias||[]).forEach(e => cnt[e.prioridad] = (cnt[e.prioridad]||0)+1);
     const sampleTotal = cnt.ALTA + cnt.MEDIA + cnt.BAJA || 1;
@@ -1049,7 +1048,6 @@
             zonas.map(z=>z.zona), zonas.map(z=>z.total),
             zonas.map((_,i)=>ZONE_COLORS[i%ZONE_COLORS.length]), 'y');
   }
-
 
   function populateFilters() {
     const zSel = document.getElementById('f-zona');
