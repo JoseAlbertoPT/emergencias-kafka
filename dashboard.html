@@ -210,7 +210,6 @@
       box-shadow: 0 8px 30px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
       transform: translateY(-2px);
     }
-    /* El mapa no debe moverse con transform: rompe los cálculos de coordenadas de Leaflet */
     .map-card { cursor: default; }
     .map-card:hover { transform: none !important; box-shadow: 0 1px 4px rgba(0,0,0,.05) !important; }
     .map-card::before { display: none !important; }
@@ -379,7 +378,6 @@
 <div class="app-shell">
 
 
-  <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">
@@ -802,7 +800,6 @@
   };
 
   Chart.register(gradientBarPlugin, doughnutCenterPlugin);
-
   Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
   Chart.defaults.font.size = 11;
   Chart.defaults.color = '#64748b';
@@ -819,6 +816,7 @@
     boxPadding: 5,
     usePointStyle: true,
   });
+
   const PAGE_TITLES = { inicio:'Inicio', datos:'Datos', graficas:'Gráficas', busqueda:'Búsqueda Avanzada', mapa:'Mapa', alertas:'Alertas Críticas' };
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -832,8 +830,8 @@
       if (s === 'alertas') renderAlertas();
     });
   });
-  function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
 
+  function kill(id) { if (CH[id]) { CH[id].destroy(); delete CH[id]; } }
   function mkBar(id, labels, values, colors, indexAxis='x') {
     kill(id);
     const horiz = indexAxis === 'y';
@@ -847,6 +845,7 @@
       borderRadius: horiz ? { topRight:8, bottomRight:8 } : 8,
       borderSkipped: false,
     };
+
     const valueAxis = horiz ? 'x' : 'y';
     const catAxis   = horiz ? 'y' : 'x';
     CH[id] = new Chart(document.getElementById(id), {
@@ -1132,9 +1131,13 @@
     'CUAJIMALPA DE MORELOS':   [19.3601, -99.2957],
     'MILPA ALTA':              [19.1893, -98.9779],
     'XOCHIMILCO':              [19.2627, -99.1030],
+    'POLANCO':                 [19.4321, -99.1982],
+    'SANTA FE':                [19.3647, -99.2590],
+    'CENTRO HISTORICO':        [19.4326, -99.1332],
+    'REFORMA':                 [19.4284, -99.1640],
+    'CONDESA':                 [19.4110, -99.1687],
   };
 
-  // --- NOTIFICACIONES + HISTORIAL DE ALERTAS ---
   const alertHistory = [];
   const seenIds = new Set();
   let isFirstLoad = true;
@@ -1189,7 +1192,6 @@
   }
 
 
-  // --- MAPA (con popup mejorado) ---
   let leafletMap = null;
   let mapCircles = [];
   function renderMapa() {
