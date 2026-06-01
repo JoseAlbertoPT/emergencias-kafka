@@ -210,6 +210,10 @@
       box-shadow: 0 8px 30px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
       transform: translateY(-2px);
     }
+    /* El mapa no debe moverse con transform: rompe los cálculos de coordenadas de Leaflet */
+    .map-card { cursor: default; }
+    .map-card:hover { transform: none !important; box-shadow: 0 1px 4px rgba(0,0,0,.05) !important; }
+    .map-card::before { display: none !important; }
     .chart-card h3    { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; letter-spacing: -.01em; }
     .chart-card .csub { font-size: .72rem; color: var(--muted); margin-bottom: 1.3rem; }
     .chart-container { position: relative; }
@@ -730,7 +734,7 @@
           <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Entre 50 y 100</span>
           <span class="legend-item"><span class="legend-dot" style="background:#1f7529"></span>Menos de 50</span>
         </div>
-        <div class="chart-card" style="padding:0;overflow:hidden">
+        <div class="chart-card map-card" style="padding:0;overflow:hidden">
           <div id="map-container"></div>
         </div>
       </section>
@@ -824,7 +828,7 @@
       item.classList.add('active');
       document.getElementById('sec-' + s).classList.add('active');
       document.getElementById('page-title').textContent = PAGE_TITLES[s];
-      if (s === 'mapa' && data) renderMapa();
+      if (s === 'mapa' && data) setTimeout(renderMapa, 50);
       if (s === 'alertas') renderAlertas();
     });
   });
@@ -1244,7 +1248,7 @@
       `);
       mapCircles.push(circle);
     });
-    leafletMap.invalidateSize();
+    setTimeout(() => leafletMap.invalidateSize(), 200);
   }
   async function doRefresh() {
     const btn = document.getElementById('btn-refresh');
