@@ -95,6 +95,7 @@ public class ServidorWeb {
                       .append("}");
                 }
             }
+
             sb.append("],");
             sb.append("\"stats\":{");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -107,6 +108,7 @@ public class ServidorWeb {
                       .append("\"alta\":").append(rs.getLong("alta"));
                 }
             }
+
             sb.append("},");
             sb.append("\"zonas\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -121,6 +123,7 @@ public class ServidorWeb {
                       .append("\",\"total\":").append(rs.getLong("total")).append("}");
                 }
             }
+
             sb.append("],");
             sb.append("\"tipos\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -135,6 +138,7 @@ public class ServidorWeb {
                       .append("\",\"total\":").append(rs.getLong("total")).append("}");
                 }
             }
+
             sb.append("]");
             sb.append("}");
             return sb.toString();
