@@ -46,14 +46,11 @@ public class EmergenciaProducer {
                 String tipo      = TIPOS[random.nextInt(TIPOS.length)];
                 String prioridad = PRIORIDADES[random.nextInt(PRIORIDADES.length)];
                 String hora      = LocalDateTime.now().format(FORMATTER);
-
                 String json = String.format(
                     "{\"zona\":\"%s\",\"tipo\":\"%s\",\"prioridad\":\"%s\",\"hora\":\"%s\"}",
                     zona, tipo, prioridad, hora
                 );
-
                 ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC, zona, json);
-
                 producer.send(record, (metadata, exception) -> {
                     if (exception != null) {
                         System.err.println("Error al enviar: " + exception.getMessage());

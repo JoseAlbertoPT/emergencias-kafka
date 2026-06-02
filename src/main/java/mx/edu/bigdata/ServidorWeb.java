@@ -76,7 +76,6 @@ public class ServidorWeb {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
             StringBuilder sb = new StringBuilder("{");
 
-            // Últimas 10 emergencias
             sb.append("\"emergencias\":[");
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT id, zona, tipo, prioridad, hora, fecha_registro " +

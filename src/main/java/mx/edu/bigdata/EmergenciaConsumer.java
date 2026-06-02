@@ -26,10 +26,12 @@ public class EmergenciaConsumer {
     private static final String DB_URL  = "jdbc:postgresql://localhost:5432/emergencias_db";
     private static final String DB_USER = "postgres";
     private static final String DB_PASS = "postgres123";
-
     private static final String SQL_INSERT =
+
         "INSERT INTO emergencias (zona, tipo, prioridad, hora, fecha_registro) " +
         "VALUES (?, ?, ?, ?, ?) RETURNING id";
+
+
     private static int totalEmergencias = 0;
     private static final Map<String, Integer> conteoZonas = new HashMap<>();
     private static final Map<String, Integer> conteoTipos = new HashMap<>();
@@ -41,14 +43,11 @@ public class EmergenciaConsumer {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
              Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
-
             consumer.subscribe(Collections.singletonList(TOPIC));
             System.out.println("=== EmergenciaConsumer iniciado. Escuchando topic: " + TOPIC + " ===");
             System.out.println("=== Conexion a PostgreSQL establecida ===\n");
-
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
                 for (ConsumerRecord<String, String> record : records) {
@@ -114,7 +113,7 @@ public class EmergenciaConsumer {
             .max(Map.Entry.comparingByValue())
             .map(Map.Entry::getKey)
             .orElse("N/A");
-        System.out.println("\n+--------------------------------------------------+");
+        System.out.println("\n+-------------------------------------------------+");
         System.out.println("|           RESUMEN ESTADISTICO                    |");
         System.out.println("+--------------------------------------------------+");
         System.out.printf( "|  Total de emergencias   : %-22d|%n", totalEmergencias);

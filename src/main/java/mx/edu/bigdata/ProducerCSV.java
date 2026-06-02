@@ -40,6 +40,7 @@ public class ProducerCSV {
                     primeraFila = false;
                     continue;
                 }
+
                 try {
                     String[] cols = line.split(",", -1);
                     if (cols.length < MIN_COLUMNS) {
